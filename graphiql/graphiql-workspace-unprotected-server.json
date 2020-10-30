@@ -1,0 +1,76 @@
+{
+  "key": "graphiql",
+  "lastId": 1,
+  "tabIds": [
+    "tab1",
+    "tab2"
+  ],
+  "closedTabs": [],
+  "defaultUrl": "http://localhost:8002/graphiql",
+  "defaultWebsocketUrl": "ws://localhost:8002/socket",
+  "defaultQuery": "",
+  "defaultVariables": "",
+  "defaultProxy": false,
+  "defaultHeaders": [],
+  "usedUrls": [
+    "http://localhost:8002/graphiql"
+  ],
+  "recentHeaders": [],
+  "maxTabHistory": 20,
+  "maxUrlHistory": 20,
+  "maxHistory": 20,
+  "savedQueries": [
+    {
+      "query": "subscription { todoAdded(topic: \"todos\") { id, title, completed } }",
+      "variables": ""
+    },
+    {
+      "query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "variables": "{\"title\": \"task 1\"}"
+    }
+  ],
+  "activeId": "tab1",
+  "tabs": [
+    {
+      "id": "tab1",
+      "name": "VALID: Authorization header",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:editorFlex": 1,
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:operationName": "CreateTodo"
+    },
+    {
+      "id": "tab2",
+      "name": "INVALID: Missing the Authentication Header",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 2\"}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 2\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:variableEditorHeight": 198,
+      "graphiql:editorFlex": 1
+    }
+  ]
+}
