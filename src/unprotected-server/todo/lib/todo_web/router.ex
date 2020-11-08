@@ -9,6 +9,13 @@ defmodule TodoWeb.Router do
     plug TodoWeb.AbsintheContextPlug
   end
 
+  scope "/" do
+    pipe_through :api
+
+    post "/auth/signup", TodoWeb.AuthController, :signup
+    post "/auth/login", TodoWeb.AuthController, :login
+  end
+
   scope "/graphiql" do
     pipe_through :api
     pipe_through :graphql

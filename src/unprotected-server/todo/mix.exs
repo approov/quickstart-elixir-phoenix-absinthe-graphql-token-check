@@ -39,6 +39,7 @@ defmodule Todo.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:absinthe_phoenix, "~> 2.0.0"},
+      {:bcrypt_elixir, "~> 2.0"}
     ]
   end
 

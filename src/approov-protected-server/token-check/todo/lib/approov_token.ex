@@ -26,7 +26,8 @@ defmodule ApproovToken do
   defp _get_approov_token_header(conn) do
     case Plug.Conn.get_req_header(conn, "approov-token") do
       [] ->
-        {:error, :missing_approov_token_header}
+        Logger.debug("Approov token not in the headers. Next, try to retrieve from url query params.")
+        _get_approov_token(conn.params)
 
       [approov_token | _] ->
 
@@ -35,7 +36,7 @@ defmodule ApproovToken do
   end
 
   defp _get_approov_token(%{"Approov-Token" => token}) when is_binary(token), do: {:ok, token}
-  defp _get_approov_token(_params), do: {:error, :missing_approov_token_parameter}
+  defp _get_approov_token(_params), do: {:error, :missing_approov_token}
 
   defp _verify_approov_token(approov_token, approov_jwk) do
     with {:ok, approov_token_claims} <- _decode_and_verify(approov_token, approov_jwk),
@@ -47,7 +48,7 @@ defmodule ApproovToken do
         {:error, reason}
 
       false ->
-        {:error, :missing_expiration_claim}
+        {:error, :approov_token_missing_expiration_claim}
     end
   end
 
@@ -57,10 +58,10 @@ defmodule ApproovToken do
         {:ok, approov_token_claims}
 
       {false, _approov_token_claims, _jws} ->
-        {:error, :invalid_signature}
+        {:error, :approov_token_invalid_signature}
 
       {:error, {:badarg, _arg}} ->
-        {:error, :malformed}
+        {:error, :approov_token_malformed}
 
       {:error, _reason} ->
         {:error, :jwt_library_internal_error}
@@ -79,7 +80,7 @@ defmodule ApproovToken do
         :ok
 
       _ ->
-        {:error, :jwt_expired}
+        {:error, :approov_token_expired}
     end
   end
 

@@ -11,12 +11,16 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
+encryption_secret =
+  System.get_env("ENCRYPTION_SECRET") ||
+    raise """
+    environment variable ENCRYPTION_SECRET is missing.
+    You can generate one by calling: mix phx.gen.secret
+    """
+
 config :todo, TodoWeb.Endpoint,
-  http: [
-    port: String.to_integer(System.get_env("PORT") || "4000"),
-    transport_options: [socket_opts: [:inet6]]
-  ],
-  secret_key_base: secret_key_base
+  secret_key_base: secret_key_base,
+  encryption_secret: encryption_secret
 
 # ## Using releases (Elixir v1.9+)
 #

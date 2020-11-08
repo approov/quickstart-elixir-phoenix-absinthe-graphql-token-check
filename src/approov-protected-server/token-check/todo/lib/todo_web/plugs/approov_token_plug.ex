@@ -25,8 +25,9 @@ defmodule TodoWeb.ApproovTokenPlug do
   end
 
   def call(conn, [{:approov_jwk, approov_jwk}]) do
-    with {:ok, _approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
+    with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
       conn
+      |> Plug.Conn.put_private(:todo_approov_token_claims, approov_token_claims)
     else
       {:error, reason} ->
         # Logs are set to :debug level, aka for development. Customize it for your needs.
@@ -37,8 +38,8 @@ defmodule TodoWeb.ApproovTokenPlug do
     end
   end
 
-  defp _log_error(reason) when is_atom(reason), do: Logger.debug(Atom.to_string(reason))
-  defp _log_error(reason), do: Logger.debug(reason)
+  defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))
+  defp _log_error(reason), do: Logger.warn(reason)
 
   defp _halt_connection(conn) do
     conn

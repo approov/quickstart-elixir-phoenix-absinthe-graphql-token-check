@@ -3,10 +3,7 @@ defmodule ApproovToken do
 
   def verify(%Plug.Conn{} = conn, %{} = approov_jwk) do
     with {:ok, approov_token} <- _get_approov_token_header(conn),
-         {:ok, approov_token_claims} <- _verify_approov_token(approov_token, approov_jwk),
-         {:ok, token_binding_header} <- _get_token_binding_header(conn),
-         :ok <- _verify_approov_token_binding(approov_token_claims, token_binding_header) do
-
+         {:ok, approov_token_claims} <- _verify_approov_token(approov_token, approov_jwk) do
       {:ok, approov_token_claims}
     else
       {:error, reason} ->
@@ -16,9 +13,7 @@ defmodule ApproovToken do
 
   def verify(%{} = params, %{} = approov_jwk) do
     with {:ok, approov_token} <- _get_approov_token(params),
-         {:ok, approov_token_claims} <- _verify_approov_token(approov_token, approov_jwk),
-         {:ok, token_binding_header} <- _get_token_binding(params),
-         :ok <- _verify_approov_token_binding(approov_token_claims, token_binding_header) do
+         {:ok, approov_token_claims} <- _verify_approov_token(approov_token, approov_jwk) do
 
       {:ok, approov_token_claims}
     else
@@ -30,7 +25,8 @@ defmodule ApproovToken do
   defp _get_approov_token_header(conn) do
     case Plug.Conn.get_req_header(conn, "approov-token") do
       [] ->
-        {:error, :missing_approov_token_header}
+        Logger.debug("Approov token not in the headers. Next, try to retrieve from the url query params.")
+        _get_approov_token(conn.params)
 
       [approov_token | _] ->
 
@@ -38,25 +34,8 @@ defmodule ApproovToken do
     end
   end
 
-  defp _get_token_binding_header(conn) do
-    # We use the Authorization token, but feel free to use another header in
-    # the request. Bear in mind that it needs to be the same header used in the
-    # mobile app to bind the request with the Approov token.
-    case Plug.Conn.get_req_header(conn, "authorization") do
-      [] ->
-        {:error, :missing_token_binding_header}
-
-      [token_binding_header | _] ->
-
-        {:ok, token_binding_header}
-    end
-  end
-
   defp _get_approov_token(%{"Approov-Token" => token}) when is_binary(token), do: {:ok, token}
-  defp _get_approov_token(_params), do: {:error, :missing_approov_token_parameter}
-
-  defp _get_token_binding(%{"Authorization" => token}) when is_binary(token), do: {:ok, token}
-  defp _get_token_binding(_params), do: {:error, :missing_token_binding_parameter}
+  defp _get_approov_token(_params), do: {:error, :missing_approov_token}
 
   defp _verify_approov_token(approov_token, approov_jwk) do
     with {:ok, approov_token_claims} <- _decode_and_verify(approov_token, approov_jwk),
@@ -68,7 +47,7 @@ defmodule ApproovToken do
         {:error, reason}
 
       false ->
-        {:error, :missing_expiration_claim}
+        {:error, :approov_token_missing_expiration_claim}
     end
   end
 
@@ -78,10 +57,10 @@ defmodule ApproovToken do
         {:ok, approov_token_claims}
 
       {false, _approov_token_claims, _jws} ->
-        {:error, :invalid_signature}
+        {:error, :approov_token_invalid_signature}
 
       {:error, {:badarg, _arg}} ->
-        {:error, :malformed}
+        {:error, :approov_token_malformed}
 
       {:error, _reason} ->
         {:error, :jwt_library_internal_error}
@@ -100,7 +79,7 @@ defmodule ApproovToken do
         :ok
 
       _ ->
-        {:error, :jwt_expired}
+        {:error, :approov_token_expired}
     end
   end
 
@@ -114,6 +93,35 @@ defmodule ApproovToken do
     {timestamp, _decimals} = Integer.parse("#{timestamp}")
     DateTime.from_unix!(timestamp)
   end
+
+  def verify_token_binding(%{private: %{todo_approov_token_claims: approov_token_claims}} = conn) do
+    with {:ok, token_binding_header} <- _get_token_binding_header(conn),
+         :ok <- _verify_approov_token_binding(approov_token_claims, token_binding_header)
+    do
+      :ok
+    else
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp _get_token_binding_header(conn) do
+    # We use the Authorization token, but feel free to use another header in
+    # the request. Bear in mind that it needs to be the same header used in the
+    # mobile app to bind the request with the Approov token.
+    case Plug.Conn.get_req_header(conn, "authorization") do
+      [] ->
+        Logger.debug("Approov token binding header is missing. Next, try to retrieve from the url query params.")
+        _get_token_binding(conn.params)
+
+      [token_binding_header | _] ->
+
+        {:ok, token_binding_header}
+    end
+  end
+
+  defp _get_token_binding(%{"Authorization" => token}) when is_binary(token), do: {:ok, token}
+  defp _get_token_binding(_params), do: {:error, :missing_approov_token_binding}
 
   defp _verify_approov_token_binding(
           %JOSE.JWT{fields: %{"pay" => token_binding_claim}} = _approov_token_claims,
@@ -131,7 +139,7 @@ defmodule ApproovToken do
         :ok
 
       false ->
-        {:error, :invalid_token_binding_header}
+        {:error, :approov_invalid_token_binding_header}
     end
   end
 

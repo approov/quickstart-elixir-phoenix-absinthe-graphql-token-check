@@ -1,4 +1,4 @@
-defmodule TodoWeb.ApproovTokenPlug do
+defmodule TodoWeb.ApproovTokenBindingPlug do
   require Logger
 
   ##############################################################################
@@ -9,14 +9,7 @@ defmodule TodoWeb.ApproovTokenPlug do
   # @link https://hexdocs.pm/phoenix/plug.html#module-plugs
   ##############################################################################
 
-  def init(options) do
-    jwk = %{
-      "kty" => "oct",
-      "k" =>  Application.fetch_env!(:todo, ApproovToken)[:secret_key]
-    }
-
-    [{:approov_jwk, jwk} | options]
-  end
+  def init(options), do: options
 
   # Allows to load the web interface for GraphiQL at `example.com/graphiql`
   # without checking for the Approov token.
@@ -24,10 +17,9 @@ defmodule TodoWeb.ApproovTokenPlug do
     conn
   end
 
-  def call(conn, [{:approov_jwk, approov_jwk}]) do
-    with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
+  def call(conn, _opts) do
+    with :ok <- ApproovToken.verify_token_binding(conn) do
       conn
-      |> Plug.Conn.put_private(:todo_approov_token_claims, approov_token_claims)
     else
       {:error, reason} ->
         # Logs are set to :debug level, aka for development. Customize it for your needs.

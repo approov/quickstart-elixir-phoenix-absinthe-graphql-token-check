@@ -1,0 +1,25 @@
+version: "2.1"
+
+services:
+
+  approov-token-protected-dev:
+    image: approov/quickstart-elixir-phoenix
+    build: ./../../../../docker/build
+    restart: always
+    env_file: .env
+    networks:
+      - traefik
+      - default
+    command: "mix phx.server"
+    volumes:
+      - ./:/home/developer/workspace
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=${URL_PUBLIC_HOST? Missing value for: URL_PUBLIC_HOST}"
+      - "traefik.docker.network=traefik"
+      - "traefik.port=${HTTP_INTERNAL_PORT}"
+      - "traefik.frontend.rule=Host:${URL_PUBLIC_HOST}"
+
+networks:
+  traefik:
+    external: true

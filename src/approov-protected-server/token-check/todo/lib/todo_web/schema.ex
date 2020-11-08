@@ -6,9 +6,11 @@ defmodule TodoWeb.Schema do
   require Logger
 
   object :todo do
-    field :id, non_null(:id)
+    field :id, non_null(:integer)
     field :title, non_null(:string)
-    field :completed, non_null(:boolean)
+    field :is_completed, non_null(:boolean)
+    field :is_public, non_null(:boolean)
+    field :created_at, non_null(:string)
   end
 
   query do
@@ -16,23 +18,40 @@ defmodule TodoWeb.Schema do
     field :all_todos, non_null(list_of(non_null(:todo))) do
       resolve(&TodoResolver.all_todos/3)
     end
+
+    @desc "Get all completed todos"
+    field :completed_todos, non_null(list_of(non_null(:todo))) do
+      resolve(&TodoResolver.completed_todos/3)
+    end
+
+    @desc "Get all active todos"
+    field :active_todos, non_null(list_of(non_null(:todo))) do
+      resolve(&TodoResolver.active_todos/3)
+    end
   end
 
   mutation do
     @desc "Create a todo"
     field :create_todo, type: :todo do
       arg :title, non_null(:string)
-      arg :completed, non_null(:boolean)
+      arg :is_public, non_null(:boolean)
 
       resolve(&TodoResolver.create_todo/3)
     end
 
-    @desc "Update a todo"
-    field :update_todo, :todo do
-      arg :id, non_null(:id)
-      arg :completed, non_null(:boolean)
+    @desc "Toggle a todo"
+    field :toggle_todo, :todo do
+      arg :id, non_null(:integer)
+      arg :is_completed, non_null(:boolean)
 
-      resolve(&TodoResolver.update_todo/3)
+      resolve(&TodoResolver.toggle_todo/3)
+    end
+
+    @desc "Delete a todo"
+    field :delete_todo, :todo do
+      arg :id, non_null(:integer)
+
+      resolve(&TodoResolver.delete_todo/3)
     end
   end
 

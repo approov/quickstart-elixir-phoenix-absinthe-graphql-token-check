@@ -7,7 +7,7 @@ defmodule TodoWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_hello_key",
+    key: "_todo_key",
     signing_salt: "pr4DGfGh"
   ]
 

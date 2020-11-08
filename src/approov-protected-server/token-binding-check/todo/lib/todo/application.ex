@@ -7,7 +7,11 @@ defmodule Todo.Application do
 
   def start(_type, _args) do
 
-    :ets.new(:todos, [:set, :protected, :named_table, :public])
+    # @TODO Create tables owned only by the process using them. so that they
+    #       don't need to be public. I think we need to create a GenServer to
+    #       access it, but not sure... need to investigate further.
+    :ets.new(:todos, [:set, :named_table, :public])
+    :ets.new(:users, [:set, :named_table, :public])
 
     children = [
       # Start the Telemetry supervisor

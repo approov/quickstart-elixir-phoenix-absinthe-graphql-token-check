@@ -3,7 +3,9 @@ defmodule TodoWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
 
+  pipeline :approov_token do
     # Ideally you will not want to add any other Plug before the Approov Token
     # check to protect your server from wasting resources in processing requests
     # not having a valid Approov token. This increases availability for your
@@ -17,8 +19,17 @@ defmodule TodoWeb.Router do
     plug TodoWeb.AbsintheContextPlug
   end
 
+  scope "/" do
+    pipe_through :api
+    pipe_through :approov_token
+
+    post "/auth/signup", TodoWeb.AuthController, :signup
+    post "/auth/login", TodoWeb.AuthController, :login
+  end
+
   scope "/graphiql" do
     pipe_through :api
+    pipe_through :approov_token
     pipe_through :graphql
 
     # The `/graphiql` endpoint exposes too much to attackers, thus in my opinion
@@ -32,6 +43,7 @@ defmodule TodoWeb.Router do
 
   scope "/" do
     pipe_through :api
+    pipe_through :approov_token
     pipe_through :graphql
 
     forward "/", Absinthe.Plug,

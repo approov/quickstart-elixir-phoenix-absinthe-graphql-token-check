@@ -32,8 +32,8 @@ defmodule TodoWeb.UserSocket do
     end
   end
 
-  defp _log_error(reason) when is_atom(reason), do: Logger.debug(Atom.to_string(reason))
-  defp _log_error(reason), do: Logger.debug(reason)
+  defp _log_error(reason) when is_atom(reason), do: Logger.error(Atom.to_string(reason))
+  defp _log_error(reason), do: Logger.error(reason)
 
   @impl true
   def id(_socket), do: nil
