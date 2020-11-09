@@ -32,9 +32,6 @@ config :todo, TodoWeb.Endpoint,
     host: url_public_host,
     port: url_public_port
   ],
-  force_ssl: [
-    rewrite_on: [:x_forwarded_proto]
-  ],
   check_origin: [url_public]
 
 #

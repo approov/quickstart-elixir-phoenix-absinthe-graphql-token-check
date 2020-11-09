@@ -1,12 +1,5 @@
 import Config
 
-approov_secret =
-  System.get_env("APPROOV_BASE64_SECRET") ||
-    raise "Environment variable APPROOV_BASE64_SECRET is missing."
-
-config :todo, ApproovToken,
-  secret_key: approov_secret
-
 http_internal_port = System.get_env("HTTP_INTERNAL_PORT") || raise "Missing HTTP_INTERNAL_PORT env var"
 url_public_scheme = System.get_env("URL_PUBLIC_SCHEME") || "https"
 url_public_host = System.get_env("URL_PUBLIC_HOST") || raise "Missing URL_PUBLIC_HOST env var"
@@ -31,9 +24,6 @@ config :todo, TodoWeb.Endpoint,
     scheme: url_public_scheme,
     host: url_public_host,
     port: url_public_port
-  ],
-  force_ssl: [
-    rewrite_on: [:x_forwarded_proto]
   ],
   check_origin: [url_public]
 
