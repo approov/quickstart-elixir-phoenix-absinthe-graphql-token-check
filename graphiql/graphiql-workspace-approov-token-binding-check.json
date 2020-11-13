@@ -1,0 +1,257 @@
+{
+  "key": "graphiql",
+  "lastId": 1,
+  "tabIds": [
+    "tab1",
+    "tab2",
+    "tab3",
+    "tab4",
+    "tab5",
+    "tab6",
+    "tab7",
+    "tab8",
+    "tab9"
+  ],
+  "closedTabs": [],
+  "defaultUrl": "http://localhost:8002/graphiql",
+  "defaultWebsocketUrl": "ws://localhost:8002/socket",
+  "defaultQuery": "",
+  "defaultVariables": "",
+  "defaultProxy": false,
+  "defaultHeaders": [],
+  "usedUrls": [
+    "http://localhost:8002/graphiql"
+  ],
+  "recentHeaders": [],
+  "maxTabHistory": 20,
+  "maxUrlHistory": 20,
+  "maxHistory": 20,
+  "savedQueries": [
+    {
+      "query": "subscription { todoAdded(topic: \"todos\") { id, title, completed } }",
+      "variables": ""
+    },
+    {
+      "query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "variables": "{\"title\": \"task 1\"}"
+    }
+  ],
+  "activeId": "tab1",
+  "tabs": [
+    {
+      "id": "tab1",
+      "name": "VALID: signature and expire time for the Approov token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        },
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MTgwMTgyMjQsInBheSI6IlZRRkZQSlo2ODJhT3R4Uk1qejBrdENIbXlXZUVFZVNNdlhoMXVEOEozdms9In0.0jTQ798iC3iF5iIOGB6gUyHbWvgZq0ZVYKzL-vsOBuc"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:editorFlex": 1,
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:operationName": "CreateTodo"
+    },
+    {
+      "id": "tab2",
+      "name": "VALID: But without the token biding header",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        },
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODMyMDV9.cG01T9zBv_NzcNdIHU3lWXKNsWoAktOJ9Xt6mA8uTFs"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:editorFlex": 1,
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:docExplorerWidth": 350
+    },
+    {
+      "id": "tab3",
+      "name": "INVALID: Missing the Authentication Header with a valid Approov Token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODMyMDV9.cG01T9zBv_NzcNdIHU3lWXKNsWoAktOJ9Xt6mA8uTFs"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 2\"}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 2\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:variableEditorHeight": 198,
+      "graphiql:editorFlex": 1
+    },
+    {
+      "id": "tab4",
+      "name": "INVALID: Missing the Approov Token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 2\"}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"subscription { todoAdded(topic: \\\"todos\\\") { id, title, completed } }\",\"variables\":\"\"},{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 2\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:editorFlex": 1
+    },
+    {
+      "id": "tab5",
+      "name": "INVALID: Misssing the expiration time in the Approov token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImFwcHJvb3YifQ.eyJpc3MiOiJhcHByb292LmlvIn0.Hn_t9Mb2ewOLvnXP0FshGZVsOq_CaVQ_ql8P2i6dT3Y"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"subscription { todoAdded(topic: \\\"todos\\\") { id, title, completed } }\",\"variables\":\"\"},{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:editorFlex": 1,
+      "graphiql:docExplorerWidth": 350
+    },
+    {
+      "id": "tab6",
+      "name": "INVALID: expired timestamp for a valid signed Approov token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTUwODMzNDl9.Lzb46xYHGtgaykqGyBFoqbRNKGUZAUHe4favDyzz8qw"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:editorFlex": 0.45142296368989204,
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"\",\"operationName\":\"CreateTodo\"},{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:docExplorerWidth": 350
+    },
+    {
+      "id": "tab7",
+      "name": "INVALID: Malformed Approov token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Approov-Token",
+          "value": "adasdasdsadasd"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:editorFlex": 1,
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:variableEditorHeight": 200
+    },
+    {
+      "id": "tab8",
+      "name": "INVALID: signature for the Approov token",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODMyMDUuODkxOTEyfQ.RZa3-m4o6R6MSa7Y-k7xaNKucESV7fKgIKdu0ppoCK8"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:docExplorerWidth": 350,
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:editorFlex": 1
+    },
+
+    {
+      "id": "tab9",
+      "name": "INVALID: Token binding not macthing the Authorization header",
+      "url": "http://localhost:8002/graphiql",
+      "websocketUrl": "ws://localhost:8002/socket",
+      "proxy": false,
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        },
+        {
+          "name": "Approov-Token",
+          "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODM0NTcsInBheSI6IjU2NnZRV2FXR0JncytLRTh5c2pUVFBRdGdwdWUrWExNcXg4ZVlvYkNySTA9In0.VUFjdnBpRe2Ggvy19kKdrqYKd3IJzkZRRyhyY-lu8zo"
+        }
+      ],
+      "collapsed": false,
+      "maxHistory": 20,
+      "history": [],
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:variables": "{\"title\": \"task 1\"}",
+      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:operationName": "CreateTodo",
+      "graphiql:editorFlex": 1,
+      "graphiql:variableEditorHeight": 200,
+      "graphiql:docExplorerWidth": 350
+    }
+  ]
+}
