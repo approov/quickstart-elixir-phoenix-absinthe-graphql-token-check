@@ -93,7 +93,7 @@ The valid Approov tokens in the GraphiQL requests examples were signed with a du
 In the terminal execute:
 
 ```text
-export APPROOV_BASE64URL_SECRET=h+CX0tOzdAAR9l15bWAqvq7w9olk66daIH+Xk+IAHhVVHszjDzeGobzNnqyRze3lw/WVyWrc2gZfh3XXfBOmww==
+export APPROOV_BASE64URL_SECRET=h-CX0tOzdAAR9l15bWAqvq7w9olk66daIH-Xk-IAHhVVHszjDzeGobzNnqyRze3lw_WVyWrc2gZfh3XXfBOmww==
 ```
 
 [TOC](#toc---table-of-contents)
