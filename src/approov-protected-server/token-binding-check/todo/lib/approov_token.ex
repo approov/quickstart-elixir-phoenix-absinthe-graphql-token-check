@@ -25,7 +25,7 @@ defmodule ApproovToken do
   defp _get_approov_token_header(conn) do
     case Plug.Conn.get_req_header(conn, "approov-token") do
       [] ->
-        Logger.debug("Approov token not in the headers. Next, try to retrieve from the url query params.")
+        Logger.info("Approov token not in the headers. Next, try to retrieve from the url query params.")
         _get_approov_token(conn.params)
 
       [approov_token | _] ->
@@ -111,7 +111,7 @@ defmodule ApproovToken do
     # mobile app to bind the request with the Approov token.
     case Plug.Conn.get_req_header(conn, "authorization") do
       [] ->
-        Logger.debug("Approov token binding header is missing. Next, try to retrieve from the url query params.")
+        Logger.info("Approov token binding header is missing. Next, try to retrieve from the url query params.")
         _get_token_binding(conn.params)
 
       [token_binding_header | _] ->
@@ -149,7 +149,7 @@ defmodule ApproovToken do
   # be able to benefit from the redundancy afforded by the failover system.
   defp _verify_approov_token_binding(_approov_token_claims, _token_binding_header) do
     # You may want to add some logging here
-    Logger.debug("Missing the `pay` claim in the Approov token.")
+    Logger.warn("Missing the `pay` claim in the Approov token.")
     :ok
   end
 end

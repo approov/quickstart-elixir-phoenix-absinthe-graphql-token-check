@@ -26,7 +26,7 @@ defmodule ApproovToken do
   defp _get_approov_token_header(conn) do
     case Plug.Conn.get_req_header(conn, "approov-token") do
       [] ->
-        Logger.debug("Approov token not in the headers. Next, try to retrieve from url query params.")
+        Logger.info("Approov token not in the headers. Next, try to retrieve from url query params.")
         _get_approov_token(conn.params)
 
       [approov_token | _] ->
