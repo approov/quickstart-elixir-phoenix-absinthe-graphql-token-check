@@ -66,7 +66,7 @@ Approov tokens are signed with a symmetric secret. To verify tokens, we need to 
 Retrieve the Approov secret with:
 
 ```text
-approov secret /path/to/approov/administration.tok -get base64Url
+approov secret /path/to/approov/administration.tok -get base64url
 ```
 
 > **NOTE:** The `approov secret` command requires an administration management token to execute successfully. Developer management tokens don't have sufficient privileges to get the secret.
@@ -76,7 +76,7 @@ approov secret /path/to/approov/administration.tok -get base64Url
 Export the Approov secret into the environment:
 
 ```text
-export APPROOV_BASE64_SECRET=approov_base64_secret_here
+export APPROOV_BASE64URL_SECRET=approov_base64url_secret_here
 ```
 
 For the Approov secret to be available during runtime you need to add some code to the Elixir configuration, but Elixir has compile time and runtime configuration. To not duplicate the Approov secret configuration we recommend you to add it only in the runtime configuration.
@@ -89,8 +89,8 @@ If doesn't exist already, create the file `config/runtime.exs` and then add:
 import Config
 
 approov_secret =
-  System.get_env("APPROOV_BASE64_SECRET") ||
-    raise "Environment variable APPROOV_BASE64_SECRET is missing."
+  System.get_env("APPROOV_BASE64URL_SECRET") ||
+    raise "Environment variable APPROOV_BASE64URL_SECRET is missing."
 
 config :YOUR_APP, ApproovToken,
   secret_key: approov_secret
@@ -110,8 +110,8 @@ Add to `config/releases.exs`:
 import Config
 
 approov_secret =
-  System.get_env("APPROOV_BASE64_SECRET") ||
-    raise "Environment variable APPROOV_BASE64_SECRET is missing."
+  System.get_env("APPROOV_BASE64URL_SECRET") ||
+    raise "Environment variable APPROOV_BASE64URL_SECRET is missing."
 
 config :YOUR_APP, ApproovToken,
   secret_key: approov_secret
@@ -155,14 +155,11 @@ defmodule YourAppWeb.ApproovTokenPlug do
   # @link https://hexdocs.pm/phoenix/plug.html#module-plugs
   ##############################################################################
 
-  def init(options) do
-    jwk = %{
-      "kty" => "oct",
-      "k" =>  Application.fetch_env!(:todo, ApproovToken)[:secret_key]
-    }
-
-    [{:approov_jwk, jwk} | options]
-  end
+  # Don't use this function to init the Plug with the Approov secret, because
+  # this is only evaluated at compile time, and we don't want the to have
+  # secrets inside a release. Secrets must always be retrieved from the
+  # environment where the release is running.
+  def init(opts), do: opts
 
   # Allows to load the web interface for GraphiQL at `example.com/graphiql`
   # without checking for the Approov token.
@@ -170,7 +167,14 @@ defmodule YourAppWeb.ApproovTokenPlug do
     conn
   end
 
-  def call(conn, [{:approov_jwk, approov_jwk}]) do
+  def call(conn, _opts) do
+
+    # Check the `init/1` comment to see why we don't do it there.
+    approov_jwk = %{
+      "kty" => "oct",
+      "k" =>  Application.get_env(:todo, ApproovToken)[:secret_key]
+    }
+
     with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
       conn
       |> Plug.Conn.put_private(:todo_approov_token_claims, approov_token_claims)
@@ -194,6 +198,7 @@ defmodule YourAppWeb.ApproovTokenPlug do
     |> Plug.Conn.halt()
   end
 end
+
 ```
 
 > **NOTE:** When the Approov token validation fails we return a `401` with an empty body, because we don't want to give clues to an attacker about the reason the request failed, and you can go even further by returning a `400`.
@@ -322,7 +327,7 @@ scope "/" do
   pipe_through :approov_token
   pipe_through :graphql
 
-  forward "/", Absinthe.Plug, schema: TodoWeb.Schema
+  forward "/", Absinthe.Plug, schema: YourAppWeb.Schema
 end
 ```
 

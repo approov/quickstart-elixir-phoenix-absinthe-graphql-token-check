@@ -1,6 +1,6 @@
-ARG TAG=1.10.3-slim
+ARG ELIXIR_DOCKER_TAG=1.11-slim
 
-FROM elixir:${TAG}
+FROM elixir:${ELIXIR_DOCKER_TAG}
 
 # Will not prompt for questions
 ENV DEBIAN_FRONTEND=noninteractive

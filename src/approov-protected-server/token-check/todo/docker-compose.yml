@@ -4,8 +4,8 @@ services:
 
   approov-token-protected-dev:
     image: approov/quickstart-elixir-phoenix
-    build: ./../../../../docker/build
-    restart: always
+    build: ./../../../../docker/dev
+    restart: unless-stopped
     env_file: .env
     ports:
       - 127.0.0.1:${HTTP_INTERNAL_PORT}:${HTTP_INTERNAL_PORT}

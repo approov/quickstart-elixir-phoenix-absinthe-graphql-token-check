@@ -88,12 +88,12 @@ A ready-to-use GraphiQL workspace for each server can be found [here](https://gi
 
 ### The Dummy Secret
 
-The valid Approov tokens in the GraphiQL requests examples were signed with a dummy secret that was generated with `openssl rand -base64 64 | tr -d '\n'; echo`, therefore not a production secret retrieved with `approov secret -get base64Url`, thus in order to use it you need to set the `APPROOV_BASE64_SECRET` environment variable on the backend server.
+The valid Approov tokens in the GraphiQL requests examples were signed with a dummy secret that was generated with `openssl rand -base64 64 | tr -d '\n'; echo`, therefore not a production secret retrieved with `approov secret -get base64url`, thus in order to use it you need to set the `APPROOV_BASE64URL_SECRET` environment variable on the backend server.
 
 In the terminal execute:
 
 ```text
-export APPROOV_BASE64_SECRET=h+CX0tOzdAAR9l15bWAqvq7w9olk66daIH+Xk+IAHhVVHszjDzeGobzNnqyRze3lw/WVyWrc2gZfh3XXfBOmww==
+export APPROOV_BASE64URL_SECRET=h+CX0tOzdAAR9l15bWAqvq7w9olk66daIH+Xk+IAHhVVHszjDzeGobzNnqyRze3lw/WVyWrc2gZfh3XXfBOmww==
 ```
 
 [TOC](#toc---table-of-contents)

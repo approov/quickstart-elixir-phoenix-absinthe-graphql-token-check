@@ -9,16 +9,8 @@ use Mix.Config
 
 # Configures the endpoint
 config :todo, TodoWeb.Endpoint,
-  url: [host: "localhost"],
-
-
-  # For production this secrets are replaced by the ones in prod.secret.exs
-  secret_key_base: "udep/Hn8goqZbTLF3Wtn1eBKtSRb0Umhebl6gxrE085tSNZMNvyJ4IDtE3eERxMv",
-  encryption_secret: "wtHQ022uDode1DN1qalJiIG/V8XGn1SxRDJwkrMMI38wquFSzl1NhxXHlSPc/Rj7",
-
   render_errors: [view: TodoWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: Todo.PubSub,
-  live_view: [signing_salt: "ybFSxyfy"]
+  pubsub_server: Todo.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -27,8 +19,6 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-import_config "releases.exs"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

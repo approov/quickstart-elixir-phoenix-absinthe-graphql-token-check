@@ -9,7 +9,7 @@ defmodule TodoWeb.ApproovTokenBindingPlug do
   # @link https://hexdocs.pm/phoenix/plug.html#module-plugs
   ##############################################################################
 
-  def init(options), do: options
+  def init(opts), do: opts
 
   # Allows to load the web interface for GraphiQL at `example.com/graphiql`
   # without checking for the Approov token.

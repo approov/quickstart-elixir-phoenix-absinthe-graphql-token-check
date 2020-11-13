@@ -40,7 +40,7 @@ iex> Todos.Repo.all! :users
 ]
 ```
 
-You can check by yourself how this is done at `src/unprotected-server/todo/lib/todo/user.ex`, and we hope that this approach gives you enough peace of mind when playing around with the [Todo app](https://github.com/approov/quickstart-flutter-graphql) that may use this server at `https://unprotected.flutter-graphql.demo.approov.io`.
+You can check by yourself how this is done at `src/unprotected-server/todo/lib/todo/user.ex`, and we hope that this approach gives you enough peace of mind when playing around with the [Todo app](https://github.com/approov/quickstart-flutter-graphql) that may use this server at `https://unprotected.phoenix-absinthe-graphql.demo.approov.io`.
 
 
 [TOC](#toc---table-of-contents)
@@ -57,29 +57,33 @@ Alternatively, you can use the provided docker stack via `src/unprotected-server
 
 ## Try It
 
+All the following shell commands will assume that you have your terminal open at the `src/unprotected-server/todo` folder.
+
 ### Create the `.env` File
 
-Create the `.env` from one of `.env.production.example` or `.env.localhost.example`:
+Create the `.env` from `.env.example`:
 
 ```text
-cp .env.localhost.example .env
+cp .env.example .env
 ```
 
 ### Run the Server with your Elixir Stack
 
-First, you need to install the dependencies. From the `src/unprotected-server/todo` folder execute:
+> **IMPORTANT:** If you already have run the server with the Elixir docker stack we provide via the `docker-compose.yml` file then you need to delete the `_build` and `deps` folders.
 
-```text
-mix deps.get
-```
-
-Next, you need to set the variables from the recently created `.env` file in your environment:
+First, you need to set the variables from the recently created `.env` file in your environment:
 
 ```text
 export $(grep -v '^#' .env | xargs -0)
 ```
 
-Now, you can run this server from the `src/unprotected-server/todo` folder with an interactive `iex` shell:
+Next, you need to install the dependencies with:
+
+```text
+mix deps.get
+```
+
+Now, you can run this server with an interactive `iex` shell:
 
 ```text
 iex -S mix phx.server
@@ -89,24 +93,31 @@ iex -S mix phx.server
 
 ### Run the Server with the Provided Elixir Docker Stack
 
-We provide an Elixir Docker stack with all you need to run this server.
+> **IMPORTANT:** If you already have run the server with your local Elixir stack then before you try the docker stack you need to delete the `_build` and `deps` folders.
 
-First, you need to install the dependencies. From the `src/unprotected-server/todo` folder execute:
+First, you need to install the dependencies with:
 
 ```text
-sudo docker-compose run unprotected-dev mix deps.get
+sudo docker-compose run --rm unprotected-dev mix deps.get
 ```
 
 Now, run the server with an interactive `iex` shell inside the docker container:
 
 ```
-sudo docker-compose run unprotected-dev iex -S mix phx.server
+sudo docker-compose run --rm --service-ports unprotected-dev iex -S mix phx.server
 ```
 
 Or, run the server without an interactive `iex` shell:
 
 ```text
 sudo docker-compose up
+```
+
+When you finish testing you may want to completely remove the docker stack:
+
+```text
+sudo docker-compose down
+docker image ls | grep 'approov/quickstart-elixir-phoenix' | awk '{print $3}' | xargs sudo docker image rm
 ```
 
 [TOC](#toc---table-of-contents)

@@ -3,8 +3,6 @@ defmodule Todos.User do
   require Logger
 
   @table :users
-  @secret_key_base Application.get_env(:todo, TodoWeb.Endpoint)[:secret_key_base]
-  @encryption_secret Application.get_env(:todo, TodoWeb.Endpoint)[:encryption_secret]
 
   def create(%{"username" => username, "password" => password} = _params)
     when is_binary(username)
@@ -50,7 +48,7 @@ defmodule Todos.User do
   end
 
   defp _build_password(username, password) do
-    "#{username}#{password}#{@secret_key_base}"
+    "#{username}#{password}#{Utils.secret_key_base()}"
   end
 
   defp _verify_password(username, password) do
@@ -73,12 +71,12 @@ defmodule Todos.User do
   end
 
   defp _encrypted_token(token) do
-    Phoenix.Token.encrypt(@secret_key_base, @encryption_secret, token)
+    Phoenix.Token.encrypt(Utils.secret_key_base(), Utils.encryption_secret(), token)
   end
 
   defp _decrypt_token(token) do
     # Valid for 1 day: 86400
-    Phoenix.Token.decrypt(@secret_key_base, @encryption_secret, token, max_age: 86400)
+    Phoenix.Token.decrypt(Utils.secret_key_base(), Utils.encryption_secret(), token, max_age: 86400)
   end
 
   def authorize(token: "Bearer " <> token) when is_binary(token) do

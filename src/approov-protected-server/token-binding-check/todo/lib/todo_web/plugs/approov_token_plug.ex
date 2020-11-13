@@ -9,14 +9,11 @@ defmodule TodoWeb.ApproovTokenPlug do
   # @link https://hexdocs.pm/phoenix/plug.html#module-plugs
   ##############################################################################
 
-  def init(options) do
-    jwk = %{
-      "kty" => "oct",
-      "k" =>  Application.fetch_env!(:todo, ApproovToken)[:secret_key]
-    }
-
-    [{:approov_jwk, jwk} | options]
-  end
+  # Don't use this function to init the Plug with the Approov secret, because
+  # this is only evaluated at compile time, and we don't want the to have
+  # secrets inside a release. Secrets must always be retrieved from the
+  # environment where the release is running.
+  def init(opts), do: opts
 
   # Allows to load the web interface for GraphiQL at `example.com/graphiql`
   # without checking for the Approov token.
@@ -24,7 +21,14 @@ defmodule TodoWeb.ApproovTokenPlug do
     conn
   end
 
-  def call(conn, [{:approov_jwk, approov_jwk}]) do
+  def call(conn, _opts) do
+
+    # Check the `init/1` comment to see why we don't do it there.
+    approov_jwk = %{
+      "kty" => "oct",
+      "k" =>  Application.get_env(:todo, ApproovToken)[:secret_key]
+    }
+
     with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
       conn
       |> Plug.Conn.put_private(:todo_approov_token_claims, approov_token_claims)
