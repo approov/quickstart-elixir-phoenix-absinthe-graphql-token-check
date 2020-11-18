@@ -5,6 +5,16 @@ The docker stack to build and run the docker image with a production release for
 If you are looking how to run each API backend example in your laptop, while poking around with the code, then you should look at the README of each one.
 
 
+## Requirements
+
+The docker stack used in this deployment assumes that the Host server is running Traefik.
+
+If this is not the case then please follow on this guides to setup Traefik:
+
+* [AWS EC2 Traefik Setup](https://github.com/approov/aws-ec2-traefik-setup)
+* [Debian Traefik Setup](https://github.com/approov/debian-traefik-setup)
+
+
 ## How to Deploy to Production
 
 Clone the repo:
