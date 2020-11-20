@@ -15,6 +15,17 @@ defmodule Todos.Repo do
     end
   end
 
+  def insert_or_update(record, table) do
+    case :ets.insert(table, {_key(record), record}) do
+      true ->
+        {:ok, record}
+
+      false ->
+
+        {:error, :insert_or_update_failed}
+    end
+  end
+
   def update(record, table) do
     case lookup(record.uid, table) do
       {:error, :record_not_found} ->

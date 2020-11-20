@@ -4,6 +4,10 @@ defmodule Todos.User do
 
   @table :users
 
+  def all_users() do
+    {:ok, Todos.Repo.all!(:users)}
+  end
+
   def create(%{"username" => username, "password" => password} = _params)
     when is_binary(username)
     and byte_size(username) > 0
@@ -35,6 +39,8 @@ defmodule Todos.User do
     with {:ok, user} <- _verify_password(username, password),
          token <- _encrypted_token(%{uid: user.uid})
     do
+      Todos.OnlineUser.add_user(%{uid: user.uid, name: username})
+
       {:ok, %{token: "Bearer #{token}"}}
     else
       _ ->
@@ -83,6 +89,7 @@ defmodule Todos.User do
     with  {:ok, %{uid: user_uid} = user} <- _decrypt_token(token),
           {:ok, _user} <- Todos.Repo.lookup(user_uid, @table)
       do
+        Todos.OnlineUser.update_last_seen(%{uid: user.uid})
         {:ok, user}
       else
         {:error, :record_not_found} ->

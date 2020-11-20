@@ -8,12 +8,24 @@ defmodule TodoWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_todo_key",
-    signing_salt: "pr4DGfGh"
+    signing_salt: Utils.load_from_system_env!("PLUG_SESSION_SIGNING_SALT", nil, 64, :string)
   ]
 
   socket "/socket", TodoWeb.UserSocket,
-    websocket: true,
+    websocket: [
+      compress: true,
+      connect_info: [
+        :x_headers,
+      ],
+    ],
     longpoll: false
+
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [
+      connect_info: [
+        session: @session_options
+      ]
+    ]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -30,6 +42,9 @@ defmodule TodoWeb.Endpoint do
   if code_reloading? do
     plug Phoenix.CodeReloader
   end
+
+  plug Phoenix.LiveDashboard.RequestLogger,
+    param_key: "request_logger"
 
   plug Plug.RequestId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]

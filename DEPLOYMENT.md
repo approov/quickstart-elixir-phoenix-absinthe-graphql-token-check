@@ -26,7 +26,7 @@ git clone https://github.com/approov/quickstart-elixir-phoenix-absinthe-graphql-
 Move to inside the docker stack production folder:
 
 ```text
-cd quickstart-elixir-phoenix-absinthe-graphql-token-check/docker/production
+cd quickstart-elixir-phoenix-absinthe-graphql-token-check/docker/todo-prod
 ```
 
 Create the `.env` file:

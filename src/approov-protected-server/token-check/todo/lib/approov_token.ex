@@ -24,7 +24,7 @@ defmodule ApproovToken do
   end
 
   defp _get_approov_token_header(conn) do
-    case Plug.Conn.get_req_header(conn, "approov-token") do
+    case Plug.Conn.get_req_header(conn, "x-approov-token") do
       [] ->
         Logger.info("Approov token not in the headers. Next, try to retrieve from url query params.")
         _get_approov_token(conn.params)
@@ -35,7 +35,18 @@ defmodule ApproovToken do
     end
   end
 
-  defp _get_approov_token(%{"Approov-Token" => token}) when is_binary(token), do: {:ok, token}
+  defp _get_approov_token(%{x_headers: x_headers}) when is_list(x_headers) do
+    case Utils.filter_list_of_tuples(x_headers, "x-approov-token") do
+      nil ->
+        {:ok, Utils.filter_list_of_tuples(x_headers, "X-Approov-Token")}
+
+      approov_token ->
+        {:ok, approov_token}
+    end
+  end
+
+  defp _get_approov_token(%{"x-approov-token" => approov_token}), do: {:ok, approov_token}
+  defp _get_approov_token(%{"X-Approov-Token" => approov_token}), do: {:ok, approov_token}
   defp _get_approov_token(_params), do: {:error, :missing_approov_token}
 
   defp _verify_approov_token(approov_token, approov_jwk) do

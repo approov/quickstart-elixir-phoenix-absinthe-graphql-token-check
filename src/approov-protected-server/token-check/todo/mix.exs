@@ -38,9 +38,10 @@ defmodule Todo.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
+      {:bcrypt_elixir, "~> 2.0"},
+      {:phoenix_live_dashboard, "~> 0.1"},
       {:absinthe_phoenix, "~> 2.0.0"},
       {:jose, "~> 1.10.1"},
-      {:bcrypt_elixir, "~> 2.0"}
     ]
   end
 
