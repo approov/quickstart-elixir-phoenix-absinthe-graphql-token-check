@@ -79,7 +79,7 @@ defmodule TodoWeb.Schema do
       arg :topic, non_null(:string)
 
       config fn
-        args, %{context: %{current_user: current_user}} = resolver_info ->
+        args, %{context: %{current_user: current_user}} = _resolver_info ->
           # @TODO To check the Approov token here we need to have it available
           #       in the `args`. Alternative may be to make it always available
           #       as part of the root of the schema???

@@ -17,7 +17,7 @@ defmodule TodoWeb.UserSocket do
   @impl true
   def id(_socket), do: nil
 
-  defp _authorize(socket, params, connect_info) do
+  defp _authorize(socket, params, _connect_info) do
     # Add your user authentication logic here as you see fit. For example:
     with {:ok, current_user} <- Todos.User.authorize(params: params) do
 
@@ -29,13 +29,6 @@ defmodule TodoWeb.UserSocket do
         _log_error(reason)
         :error
     end
-  end
-
-  defp _approov_jwk() do
-    %{
-      "kty" => "oct",
-      "k" =>  Application.fetch_env!(:todo, ApproovToken)[:secret_key]
-    }
   end
 
   defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))

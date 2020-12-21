@@ -79,7 +79,7 @@ defmodule TodoWeb.Schema do
       arg :topic, non_null(:string)
 
       config fn
-        args, %{context: %{current_user: current_user}} = resolver_info ->
+        args, %{context: %{current_user: current_user}} = _resolver_info ->
           # @TODO To check the Approov token here we need to have it available
           #       in the `args`. Alternative may be to make it always available
           #       as part of the root of the schema???
@@ -93,7 +93,7 @@ defmodule TodoWeb.Schema do
 
           end
 
-        args, %{context: _resolver_info} ->
+        _args, %{context: _resolver_info} ->
           Logger.warn("Missing current user when subscribing to the :fetch_online_users event")
           {:error, "Could not subscribe to the :fetch_online_users event"}
       end

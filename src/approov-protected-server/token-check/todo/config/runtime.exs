@@ -52,7 +52,7 @@ config :todo, TodoWeb.Endpoint,
   check_origin: ["#{url_public}:#{url_public_port}"],
   live_view: [signing_salt: load_from_env.("LIVE_VIEW_SIGNING_SALT", nil)],
   live_view_dashboard_user: load_from_env.("LIVE_VIEW_DASHBOARD_USER", nil),
-  live_view_dashboard_password: load_from_env.("LIVE_VIEW_DASHBOARD_PASSWORD", nil)
+  live_view_dashboard_password: Bcrypt.hash_pwd_salt(load_from_env.("LIVE_VIEW_DASHBOARD_PASSWORD", nil))
 
 #
 # Then you can assemble a release by calling `mix release`.
