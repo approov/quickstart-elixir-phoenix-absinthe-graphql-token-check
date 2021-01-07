@@ -519,7 +519,7 @@ Despite the Authorization token being a valid one, the server refuses to accept 
 
 ### Test for Websockets
 
-The Phoenix Absinthe Sockets cannot be tested using cURL, because you need to establish a websocket connection and keep it open, therefore you will need to try an online websocket client in the likes of what Postman is for HTTP requests.
+The Phoenix Absinthe Sockets are not easily tested using cURL, because you need to establish a websocket connection and keep it open.
 
 You can test the Absinthe Socket subscriptions by using the Absinthe Graphiql web interface at `your.api.domain.com/graphiql`. To make it easier to test you can upload to the web interface this graphiql workspace: `graphiql/graphiql-workspace-approov-token-check.json` and adapt it for your use case.
 
