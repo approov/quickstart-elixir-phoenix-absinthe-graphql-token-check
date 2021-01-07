@@ -347,7 +347,7 @@ To enable retrieving the `x` headers, add `connect_info: [:x_headers]` to your s
 ```elixir
 # lib/your_app_web/endpoint.ex
 
-socket "/socket", YourApp.UserSocket,
+socket "/socket", YourAppWeb.UserSocket,
   websocket: [
     compress: true,
     connect_info: [
@@ -365,10 +365,10 @@ Example of a simplified Phoenix Socket behaviour implementation with the Approov
 ```elixir
 # lib/your_app_web/channels/user_socket.ex
 
-defmodule YourApp.UserSocket do
+defmodule YourAppWeb.UserSocket do
   use Phoenix.Socket
 
-  use Absinthe.Phoenix.Socket, schema: YourApp.Schema
+  use Absinthe.Phoenix.Socket, schema: YourAppWeb.Schema
 
   @impl true
   def connect(params, socket, connect_info) do
@@ -541,4 +541,4 @@ To generate an invalid token example from the Approov Cloud service:
 approov token -type invalid -genExample your.api.domain.com
 ```
 
-[TOC](#toc---table-of-contents)u
+[TOC](#toc---table-of-contents)

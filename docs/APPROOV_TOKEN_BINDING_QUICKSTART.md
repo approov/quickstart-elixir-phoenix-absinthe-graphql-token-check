@@ -472,7 +472,7 @@ To enable retrieving the `x` headers, add `connect_info: [:x_headers]` to your s
 ```elixir
 # lib/your_app_web/endpoint.ex
 
-socket "/socket", YourApp.UserSocket,
+socket "/socket", YourAppWeb.UserSocket,
   websocket: [
     compress: true,
     connect_info: [
