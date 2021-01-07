@@ -1,9 +1,5 @@
 defmodule Todos.Repo do
 
-  defp _key(%{uid: uid} = _record) do
-    Utils.sha256(uid)
-  end
-
   def insert(record, table) do
     case :ets.insert_new(table, {_key(record), record}) do
       true ->
@@ -57,6 +53,10 @@ defmodule Todos.Repo do
 
   def delete(uid, table) do
     :ets.delete(table, _key(%{uid: uid}))
+  end
+
+  defp _key(%{uid: uid} = _record) do
+    Utils.sha256(uid)
   end
 
 end

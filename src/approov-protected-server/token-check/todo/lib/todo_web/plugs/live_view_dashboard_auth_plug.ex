@@ -110,7 +110,7 @@ defmodule TodoWeb.LiveViewDashboardAuthPlug do
         :ok
 
       false ->
-        {:error, :failed_to_validate_live_view_user}
+        {:error, :failed_to_validate_live_view_password}
     end
   end
 

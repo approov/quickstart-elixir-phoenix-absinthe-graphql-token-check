@@ -45,7 +45,6 @@ config :todo, TodoWeb.Endpoint,
     host: url_public_host,
     port: url_public_port
   ],
-  # check_origin: true,
   check_origin: ["#{url_public}:#{url_public_port}"],
   live_view: [signing_salt: load_from_env.("LIVE_VIEW_SIGNING_SALT", nil)],
   live_view_dashboard_user: load_from_env.("LIVE_VIEW_DASHBOARD_USER", nil),
