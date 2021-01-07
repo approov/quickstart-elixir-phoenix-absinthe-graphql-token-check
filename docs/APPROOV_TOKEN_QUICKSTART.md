@@ -9,7 +9,7 @@ This quickstart is for developers familiar with Phoenix who are looking for a qu
 * [Requirements](#requirements)
 * [Approov Setup](#approov-setup)
 * [Approov Token Check](#approov-token-check)
-* [Try the Approov Integration Example](#try-the-approov-integration-example)
+* [Test the Approov Integration](#test-the-approov-integration)
 
 
 ## Why?
@@ -338,9 +338,9 @@ A full working example for a simple Todo GraphQL server can be found at [src/app
 
 ## Approov Websocket Token Check
 
-This step is only necessary if you want to protect the http request to establish a socket connection, like when Absinthe subscriptions or Phoenix Channels are used.
+This step is only necessary if you want to protect the HTTPs request to establish a socket connection, like when Absinthe subscriptions or Phoenix Channels are used.
 
-Unfortunately the Phoenix socket implementation only allows to retrieve headers from the http request, that establishes the socket connection, when they start with an `x`, known as the prefix for non standard http headers.
+Unfortunately the Phoenix socket implementation only allows to retrieve headers from the HTTPs request establishing the socket connection when they start with an `x`, also known as the prefix for non standard HTTPs headers.
 
 To enable retrieving the `x` headers, add `connect_info: [:x_headers]` to your socket configuration in the file `endpoint.ex`. It should look similar to this:
 
@@ -356,9 +356,9 @@ socket "/socket", YourApp.UserSocket,
   ],
 ```
 
-This will enable to retrieve the `X_Approov_Token` header from the http request that establishes the socket connection and will make it available under the second parameter in the `connect/2` callback when implementing the `PhoenixSocket` behaviour, that usually is named as `connect_info`.
+This will enable to retrieve the `X_Approov_Token` header from the HTTPs request establishing the socket connection and will make it available under the second parameter in the `connect/2` callback when implementing the `PhoenixSocket` behaviour, that usually is named as `connect_info`.
 
-To perform the Approov token check when a websocket connection is established you need to modify the Phoenix socket behaviour implementation for `connect/2` to check the Approov token with a call to `ApproovToken.verify(connect_info, _approov_jwk())`, just like you have done before in the ApproovTokenPlug for protecting the http requests.
+To perform the Approov token check for when a websocket connection is established you need to modify the Phoenix socket behaviour implementation for `connect/2` to check the Approov token with a call to `ApproovToken.verify(connect_info, _approov_jwk())`, just like you have done before in the ApproovTokenPlug for protecting the HTTPs requests.
 
 Example of a simplified Phoenix Socket behaviour implementation with the Approov token check:
 
@@ -398,7 +398,7 @@ defmodule YourApp.UserSocket do
 end
 ```
 
-> **NOTE:** Putting sensitive data in an url query parameter is not a best security practice, thus you should avoid as much as possible to put it their. You may think that once the request is over https it isn't an issue, but you need to remember that the full url, including the query parameters, are often logged by applications, load balancers, API gateways, etc., thus causing any sensitive data on them to be leaked to the logs. Attackers usually build their attacks based on a chain of exploits, like getting the token from a compromised logging server and subsequently use it on automated or manual attacks. Just search in `shodan.io` for your logging server of choice to see how many are left accidentally publicly exposed to the internet, and attackers have automated tools scanning non-stop for them.
+> **NOTE:** Putting sensitive data in an url query parameter is not a best security practice, thus you should avoid as much as possible to put it there. You may think that once the request is over https it isn't an issue, but you need to remember that the full url, including the query parameters, are often logged by applications, load balancers, API gateways, etc., thus causing any sensitive data on them to be leaked to the logs. Attackers usually build their attacks based on a chain of exploits, like getting the token from a compromised logging server and subsequently use it on automated or manual attacks. Just search in `shodan.io` for your logging server of choice to see how many are left accidentally publicly exposed to the internet, and attackers have automated tools scanning non-stop for them.
 
 [TOC](#toc---table-of-contents)
 
