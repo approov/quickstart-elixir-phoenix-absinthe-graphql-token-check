@@ -7,11 +7,11 @@ import Config
 load_from_env = fn (var, default_value)
   when is_binary(var) ->
     case System.get_env(var, default_value) do
-      nil ->
-        raise "CONFIG ERROR: Environment variable #{var} is missing"
-
-      value ->
+      value when is_binary(value) and byte_size(value) >= 1 ->
         value
+
+      _ ->
+        raise "CONFIG ERROR: Environment variable #{var} is missing"
     end
   end
 
@@ -21,6 +21,7 @@ load_from_env = fn (var, default_value)
 
 url_public_scheme = load_from_env.("URL_PUBLIC_SCHEME", "https")
 url_public_host = load_from_env.("URL_PUBLIC_HOST", nil)
+url_public_port = load_from_env.("URL_PUBLIC_PORT", "443")
 url_public = "#{url_public_scheme}://#{url_public_host}"
 
 config :todo, ApproovToken,
@@ -45,9 +46,13 @@ config :todo, TodoWeb.Endpoint,
   url: [
     scheme: url_public_scheme,
     host: url_public_host,
-    port: load_from_env.("URL_PUBLIC_PORT", "443")
+    port: url_public_port
   ],
-  check_origin: [url_public]
+  # check_origin: true,
+  check_origin: ["#{url_public}:#{url_public_port}"],
+  live_view: [signing_salt: load_from_env.("LIVE_VIEW_SIGNING_SALT", nil)],
+  live_view_dashboard_user: load_from_env.("LIVE_VIEW_DASHBOARD_USER", nil),
+  live_view_dashboard_password: Bcrypt.hash_pwd_salt(load_from_env.("LIVE_VIEW_DASHBOARD_PASSWORD", nil))
 
 #
 # Then you can assemble a release by calling `mix release`.

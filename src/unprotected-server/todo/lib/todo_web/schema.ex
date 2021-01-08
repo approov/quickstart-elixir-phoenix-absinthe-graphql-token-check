@@ -13,6 +13,12 @@ defmodule TodoWeb.Schema do
     field :created_at, non_null(:string)
   end
 
+  object :online_users do
+    field :uid, non_null(:string)
+    field :name, non_null(:string)
+    field :last_seen, non_null(:string)
+  end
+
   query do
     @desc "Get all todos"
     field :all_todos, non_null(list_of(non_null(:todo))) do
@@ -27,6 +33,11 @@ defmodule TodoWeb.Schema do
     @desc "Get all active todos"
     field :active_todos, non_null(list_of(non_null(:todo))) do
       resolve(&TodoResolver.active_todos/3)
+    end
+
+    @desc "Fetch all online users"
+    field :online_users, non_null(list_of(non_null(:online_users))) do
+      resolve(&TodoWeb.OnlineUserResolver.all_users/3)
     end
   end
 
@@ -53,26 +64,40 @@ defmodule TodoWeb.Schema do
 
       resolve(&TodoResolver.delete_todo/3)
     end
+
+    @desc "Update last time the user was seen online"
+    field :update_last_seen, :online_users do
+      arg :name, non_null(:integer)
+
+      resolve(&TodoResolver.delete_todo/3)
+    end
   end
 
   subscription do
-    field :todo_added, :todo do
+
+    field :fetch_online_users, :online_users do
       arg :topic, non_null(:string)
 
-      config fn args, %{context: %{current_user: current_user}} = _resolver_info ->
-        case Todos.User.authorized(:subscribe_todo_added, current_user) do
-          {:ok, _current_user} ->
-            {:ok, topic: args.topic}
+      config fn
+        args, %{context: %{current_user: current_user}} = _resolver_info ->
+          # @TODO To check the Approov token here we need to have it available
+          #       in the `args`. Alternative may be to make it always available
+          #       as part of the root of the schema???
+          case Todos.User.authorized(:subscribe_online_users, current_user) do
+            {:ok, _current_user} ->
+              {:ok, topic: args.topic}
 
-          {:error, reason} ->
-            Logger.warn(Atom.to_string(reason))
-            {:error, "could not subscribe to the todo added event"}
-        end
+            {:error, reason} ->
+              Logger.warn(Atom.to_string(reason))
+              {:error, "Could not subscribe to the :fetch_online_users event"}
+
+          end
+
+        _args, %{context: _resolver_info} ->
+          Logger.warn("Missing current user when subscribing to the :fetch_online_users event")
+          {:error, "Could not subscribe to the :fetch_online_users event"}
       end
 
-      resolve fn todo, _, _ ->
-        {:ok, todo}
-      end
     end
   end
 end

@@ -12,6 +12,7 @@ defmodule Todo.Application do
     #       access it, but not sure... need to investigate further.
     :ets.new(:todos, [:set, :named_table, :public])
     :ets.new(:users, [:set, :named_table, :public])
+    :ets.new(:online_users, [:set, :named_table, :public])
 
     children = [
       # Start the Telemetry supervisor

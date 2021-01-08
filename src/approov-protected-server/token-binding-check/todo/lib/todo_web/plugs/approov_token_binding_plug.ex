@@ -11,18 +11,11 @@ defmodule TodoWeb.ApproovTokenBindingPlug do
 
   def init(opts), do: opts
 
-  # Allows to load the web interface for GraphiQL at `example.com/graphiql`
-  # without checking for the Approov token.
-  def call(%{method: "GET", request_path: "/graphiql", query_string: ""} = conn, _options) do
-    conn
-  end
-
   def call(conn, _opts) do
     with :ok <- ApproovToken.verify_token_binding(conn) do
       conn
     else
       {:error, reason} ->
-        # Logs are set to :debug level, aka for development. Customize it for your needs.
         _log_error(reason)
 
         conn

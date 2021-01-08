@@ -50,7 +50,7 @@
           "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         },
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MTgwMTgyMjQsInBheSI6IlZRRkZQSlo2ODJhT3R4Uk1qejBrdENIbXlXZUVFZVNNdlhoMXVEOEozdms9In0.0jTQ798iC3iF5iIOGB6gUyHbWvgZq0ZVYKzL-vsOBuc"
         }
       ],
@@ -77,7 +77,7 @@
           "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         },
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODMyMDV9.cG01T9zBv_NzcNdIHU3lWXKNsWoAktOJ9Xt6mA8uTFs"
         }
       ],
@@ -100,7 +100,7 @@
       "proxy": false,
       "headers": [
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODMyMDV9.cG01T9zBv_NzcNdIHU3lWXKNsWoAktOJ9Xt6mA8uTFs"
         }
       ],
@@ -141,7 +141,7 @@
       "proxy": false,
       "headers": [
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6ImFwcHJvb3YifQ.eyJpc3MiOiJhcHByb292LmlvIn0.Hn_t9Mb2ewOLvnXP0FshGZVsOq_CaVQ_ql8P2i6dT3Y"
         }
       ],
@@ -164,7 +164,7 @@
       "proxy": false,
       "headers": [
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NTUwODMzNDl9.Lzb46xYHGtgaykqGyBFoqbRNKGUZAUHe4favDyzz8qw"
         }
       ],
@@ -187,7 +187,7 @@
       "proxy": false,
       "headers": [
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "adasdasdsadasd"
         }
       ],
@@ -210,7 +210,7 @@
       "proxy": false,
       "headers": [
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODMyMDUuODkxOTEyfQ.RZa3-m4o6R6MSa7Y-k7xaNKucESV7fKgIKdu0ppoCK8"
         }
       ],
@@ -238,7 +238,7 @@
           "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
         },
         {
-          "name": "Approov-Token",
+          "name": "X-Approov-Token",
           "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjQ3MDg2ODM0NTcsInBheSI6IjU2NnZRV2FXR0JncytLRTh5c2pUVFBRdGdwdWUrWExNcXg4ZVlvYkNySTA9In0.VUFjdnBpRe2Ggvy19kKdrqYKd3IJzkZRRyhyY-lu8zo"
         }
       ],

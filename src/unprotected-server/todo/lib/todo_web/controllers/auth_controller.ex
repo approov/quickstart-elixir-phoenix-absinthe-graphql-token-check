@@ -8,7 +8,7 @@ defmodule TodoWeb.AuthController do
         json(conn, %{id: user.uid})
 
       {:error, _reason} ->
-        json(conn, %{error: "Failed to create user"})
+        _send_error_response(conn, "Failed to create user")
     end
   end
 
@@ -18,7 +18,13 @@ defmodule TodoWeb.AuthController do
         json(conn, %{token: user.token})
 
       {:error, _reason} ->
-        json(conn, %{error: "Failed to authenticate user"})
+        _send_error_response(conn,"Failed to authenticate user")
     end
+  end
+
+  defp _send_error_response(conn, message) do
+    conn
+    |> Plug.Conn.put_status(401)
+    |> json(%{error: message})
   end
 end

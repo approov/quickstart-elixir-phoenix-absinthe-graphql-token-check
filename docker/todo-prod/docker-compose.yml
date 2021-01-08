@@ -5,7 +5,7 @@ services:
   base-image:
     image: approov/quickstart-elixir-phoenix
     build:
-      context: ./../dev
+      context: ./../todo-dev
       args:
         - ELIXIR_DOCKER_TAG=${ELIXIR_DOCKER_TAG:-1.11-slim}
 

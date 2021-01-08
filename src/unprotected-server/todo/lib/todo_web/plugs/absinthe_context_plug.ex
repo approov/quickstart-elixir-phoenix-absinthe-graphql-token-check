@@ -27,7 +27,7 @@ defmodule TodoWeb.AbsintheContextPlug do
         _log_error(reason)
 
         conn
-        # |>_halt_connection()
+        |>_halt_connection()
         |> Absinthe.Plug.put_options(context: %{})
     end
   end
@@ -51,12 +51,10 @@ defmodule TodoWeb.AbsintheContextPlug do
   defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))
   defp _log_error(reason), do: Logger.warn(reason)
 
-  # defp _halt_connection(conn) do
-  #   conn
-  #   # |> Absinthe.Plug.put_options(context: %{})
-
-  #   |> Plug.Conn.put_status(401)
-  #   |> Phoenix.Controller.json(%{})
-  #   |> Plug.Conn.halt()
-  # end
+  defp _halt_connection(conn) do
+    conn
+    |> Plug.Conn.put_status(401)
+    |> Phoenix.Controller.json(%{})
+    |> Plug.Conn.halt()
+  end
 end

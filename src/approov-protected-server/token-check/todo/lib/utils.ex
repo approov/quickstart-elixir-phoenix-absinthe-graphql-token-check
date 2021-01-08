@@ -22,8 +22,29 @@ defmodule Utils do
         value
 
       _ ->
-        raise %ArgumentError{message: "Environment key #{key} for #{module} needs to be a string and have at least #{min_length} of length."}
+        raise %ArgumentError{message: "Environment key #{key} for #{module} value needs to be a string and to have a minimal length of #{min_length} characters."}
     end
   end
 
+  def load_from_system_env!(var, default_value, min_length, :string) when is_binary(var) do
+    case System.get_env(var, default_value) do
+      value when is_binary(value) and byte_size(value) >= min_length ->
+        value
+
+      _ ->
+        raise %ArgumentError{message: "System environment var #{var} value needs to be a string and to have a minimal length of #{min_length} characters."}
+
+    end
+  end
+
+  def filter_list_of_tuples(list, key) do
+    headers_list = Enum.filter(list, fn({header, _value}) -> header === key end)
+
+    case headers_list do
+      [{_header, value} | _ ] = list when length(list) === 1 ->
+        value
+      _ ->
+        nil
+    end
+  end
 end

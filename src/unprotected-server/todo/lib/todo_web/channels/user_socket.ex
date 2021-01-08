@@ -6,27 +6,32 @@ defmodule TodoWeb.UserSocket do
   require Logger
 
   @impl true
-  def connect(params, socket, _connect_info) do
+  def connect(params, socket, connect_info) do
+    Logger.info(%{socket_connect_params: params})
+    Logger.info(%{socket_connect_info: connect_info})
+
     socket
-    |> _authorize(params)
+    |> _authorize(params, connect_info)
   end
 
-  defp _authorize(socket, params) do
+  @impl true
+  def id(_socket), do: nil
+
+  defp _authorize(socket, params, _connect_info) do
     # Add your user authentication logic here as you see fit. For example:
     with {:ok, current_user} <- Todos.User.authorize(params: params) do
+
       socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{current_user: current_user})
+
       {:ok, socket}
     else
       {:error, reason} ->
-        # Logs are set to :debug level, aka for development. Customize it for your needs.
         _log_error(reason)
         :error
     end
   end
 
-  defp _log_error(reason) when is_atom(reason), do: Logger.debug(Atom.to_string(reason))
-  defp _log_error(reason), do: Logger.debug(reason)
+  defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))
+  defp _log_error(reason), do: Logger.warn(reason)
 
-  @impl true
-  def id(_socket), do: nil
 end

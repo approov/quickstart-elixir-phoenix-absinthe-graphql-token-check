@@ -9,7 +9,6 @@ use Mix.Config
 config :todo, TodoWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
-  # check_origin: false,
   watchers: []
 
 # ## SSL Support

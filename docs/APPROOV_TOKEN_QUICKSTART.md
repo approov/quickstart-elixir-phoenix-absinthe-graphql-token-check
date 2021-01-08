@@ -9,7 +9,7 @@ This quickstart is for developers familiar with Phoenix who are looking for a qu
 * [Requirements](#requirements)
 * [Approov Setup](#approov-setup)
 * [Approov Token Check](#approov-token-check)
-* [Try the Approov Integration Example](#try-the-approov-integration-example)
+* [Test the Approov Integration](#test-the-approov-integration)
 
 
 ## Why?
@@ -161,26 +161,19 @@ defmodule YourAppWeb.ApproovTokenPlug do
   # environment where the release is running.
   def init(opts), do: opts
 
-  # Allows to load the web interface for GraphiQL at `example.com/graphiql`
-  # without checking for the Approov token.
-  def call(%{method: "GET", request_path: "/graphiql", query_string: ""} = conn, _options) do
-    conn
-  end
-
   def call(conn, _opts) do
 
     # Check the `init/1` comment to see why we don't do it there.
     approov_jwk = %{
       "kty" => "oct",
-      "k" =>  Application.get_env(:todo, ApproovToken)[:secret_key]
+      "k" =>  Application.get_env(:YOUR_APP, ApproovToken)[:secret_key]
     }
 
     with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
       conn
-      |> Plug.Conn.put_private(:todo_approov_token_claims, approov_token_claims)
+      |> Plug.Conn.put_private(:approov_token_claims, approov_token_claims)
     else
       {:error, reason} ->
-        # Logs are set to :debug level, aka for development. Customize it for your needs.
         _log_error(reason)
 
         conn
@@ -198,7 +191,6 @@ defmodule YourAppWeb.ApproovTokenPlug do
     |> Plug.Conn.halt()
   end
 end
-
 ```
 
 > **NOTE:** When the Approov token validation fails we return a `401` with an empty body, because we don't want to give clues to an attacker about the reason the request failed, and you can go even further by returning a `400`.
@@ -325,6 +317,14 @@ end
 scope "/" do
   pipe_through :api
   pipe_through :approov_token
+
+  post "/auth/signup", YourAppWeb.AuthController, :signup
+  post "/auth/login", YourAppWeb.AuthController, :login
+end
+
+scope "/" do
+  pipe_through :api
+  pipe_through :approov_token
   pipe_through :graphql
 
   forward "/", Absinthe.Plug, schema: YourAppWeb.Schema
@@ -336,11 +336,78 @@ A full working example for a simple Todo GraphQL server can be found at [src/app
 [TOC](#toc---table-of-contents)
 
 
+## Approov Websocket Token Check
+
+This step is only necessary if you want to protect the HTTPs request to establish a socket connection, like when Absinthe subscriptions or Phoenix Channels are used.
+
+Unfortunately the Phoenix socket implementation only allows to retrieve headers from the HTTPs request establishing the socket connection when they start with an `x`, also known as the prefix for non standard HTTPs headers.
+
+To enable retrieving the `x` headers, add `connect_info: [:x_headers]` to your socket configuration in the file `endpoint.ex`. It should look similar to this:
+
+```elixir
+# lib/your_app_web/endpoint.ex
+
+socket "/socket", YourAppWeb.UserSocket,
+  websocket: [
+    compress: true,
+    connect_info: [
+      :x_headers, # ADD THIS LINE TO YOUR WEBSOCKET CONFIGURATION
+    ],
+  ],
+```
+
+This will enable to retrieve the `X_Approov_Token` header from the HTTPs request establishing the socket connection and will make it available under the second parameter in the `connect/2` callback when implementing the `PhoenixSocket` behaviour, that usually is named as `connect_info`.
+
+To perform the Approov token check for when a websocket connection is established you need to modify the Phoenix socket behaviour implementation for `connect/2` to check the Approov token with a call to `ApproovToken.verify(connect_info, _approov_jwk())`, just like you have done before in the ApproovTokenPlug for protecting the HTTPs requests.
+
+Example of a simplified Phoenix Socket behaviour implementation with the Approov token check:
+
+```elixir
+# lib/your_app_web/channels/user_socket.ex
+
+defmodule YourAppWeb.UserSocket do
+  use Phoenix.Socket
+
+  use Absinthe.Phoenix.Socket, schema: YourAppWeb.Schema
+
+  @impl true
+  def connect(params, socket, connect_info) do
+    with {:ok, _approov_token_claims} <- ApproovToken.verify(connect_info, _approov_jwk()),
+         # The user Authorization header is part of the url query parameters due to the Phoenix Socket limitation.
+         {:ok, current_user} <- YourApp.User.authorize(params: params) do
+
+      socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{current_user: current_user})
+
+      {:ok, socket}
+    else
+      {:error, reason} ->
+        _log_error(reason)
+        :error
+    end
+  end
+
+  @impl true
+  def id(_socket), do: nil
+
+  defp _approov_jwk() do
+    %{
+      "kty" => "oct",
+      "k" =>  Application.fetch_env!(:YOUR_APP, ApproovToken)[:secret_key]
+    }
+  end
+end
+```
+
+> **NOTE:** Putting sensitive data in an url query parameter is not a best security practice, thus you should avoid as much as possible to put it there. You may think that once the request is over https it isn't an issue, but you need to remember that the full url, including the query parameters, are often logged by applications, load balancers, API gateways, etc., thus causing any sensitive data on them to be leaked to the logs. Attackers usually build their attacks based on a chain of exploits, like getting the token from a compromised logging server and subsequently use it on automated or manual attacks. Just search in `shodan.io` for your logging server of choice to see how many are left accidentally publicly exposed to the internet, and attackers have automated tools scanning non-stop for them.
+
+[TOC](#toc---table-of-contents)
+
+
 ## Test your Approov Integration
 
 The following examples below use cURL, but you can also use the `graphiql/graphiql-workspace-approov-token-check.json` workspace in the GraphiQL web interface for your testing purposes. Just remember that you need to adjust the urls and tokens defined in the workspace to match your deployment. Alternatively, the root [README.md](/README.md#testing-with-the-absinthe-graphiql-web-interface) also contains instructions for using the preset _dummy_ secret to test your Approov integration with the provided GraphiQL workspace.
 
-#### User Signup and Login
+### User Signup and Login
 
 Generate a valid token example from the Approov Cloud service:
 
@@ -352,7 +419,7 @@ Let's signup the user in the Approov protected endpoint:
 
 ```text
 curl -i --request POST 'https://your.api.domain.com/auth/signup' \
-  --header 'Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
+  --header 'X-Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
   --data username=test@mail.com \
   --data password=your-pass-here
 ```
@@ -370,7 +437,7 @@ Next, let's login the user in the Approov protected endpoint:
 
 ```text
 curl -i --request POST 'your.api.domain.com/auth/login' \
-  --header 'Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
+  --header 'X-Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
   --data username=test@mail.com \
   --data password=your-pass-here
 ```
@@ -387,6 +454,8 @@ HTTP/2 200
 Finally we have the Bearer Authorization token that is required to represent a logged in user when doing the GraphQL queries to the backend. To note that the backend only checks the Authorization token after it is able to successfully check the Approov token.
 
 
+### Test for Regular Http Requests
+
 #### With Valid Approov Tokens
 
 Generate a valid token example from the Approov Cloud service:
@@ -399,7 +468,7 @@ Then make the request with the generated token:
 
 ```text
 curl -i --request POST 'your.api.domain.com' \
-  --header 'Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
+  --header 'X-Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
   --header 'Authorization: Bearer AUTHORIZATION_VALID_TOKEN' \
   --header "Content-Type: application/json" \
   --data '{"query":"mutation CreateTodo($title: String!) {\n  createTodo(title: $title, isPublic: false) {\n    id\n    title\n    isCompleted\n  }\n}","variables":{"title":"task me 1"},"operationName":"CreateTodo"}'
@@ -427,7 +496,7 @@ Then make the request with the generated token:
 
 ```text
 curl -i --request POST 'your.api.domain.com' \
-  --header 'Approov-Token: APPROOV_INVALID_TOKEN_EXAMPLE_HERE' \
+  --header 'X-Approov-Token: APPROOV_INVALID_TOKEN_EXAMPLE_HERE' \
   --header 'Authorization: Bearer AUTHORIZATION_VALID_TOKEN' \
   --header "Content-Type: application/json" \
   --data '{"query":"mutation CreateTodo($title: String!) {\n  createTodo(title: $title, isPublic: false) {\n    id\n    title\n    isCompleted\n  }\n}","variables":{"title":"task me invalid 1"},"operationName":"CreateTodo"}'
@@ -444,5 +513,32 @@ HTTP/2 401
 ```
 
 Despite the Authorization token being a valid one, the server refuses to accept the request, because its presented with an invalid Approov token. We always recommend for the Approov token to be checked before the Authorization token.
+
+[TOC](#toc---table-of-contents)
+
+
+### Test for Websockets
+
+The Phoenix Absinthe Sockets are not easily tested using cURL, because you need to establish a websocket connection and keep it open.
+
+You can test the Absinthe Socket subscriptions by using the Absinthe Graphiql web interface at `your.api.domain.com/graphiql`. To make it easier to test you can upload to the web interface this graphiql workspace: `graphiql/graphiql-workspace-approov-token-check.json` and adapt it for your use case.
+
+> **ALERT:** If you have the GraphiQL web interface enabled in a server accessible from the internet, then we strongly advise you to protect it with user Authentication and/or IP address white-list. For example, something like the `TodoWeb.LiveViewDashboardAuthPlug` used in the server examples of this repo, that are based on the `Plug.BasicAuth` package.
+
+Another alternative is to use an online websocket client from a browser, and you can check this [Stackoverflow question](https://stackoverflow.com/questions/42269075/websocket-connections-with-postman) to see some suggestions.
+
+Remember that for establishing the websocket connection you need to set the `X-Approov-Token` header in the request.
+
+To generate a valid token example from the Approov Cloud service:
+
+```text
+approov token -genExample your.api.domain.com
+```
+
+To generate an invalid token example from the Approov Cloud service:
+
+```text
+approov token -type invalid -genExample your.api.domain.com
+```
 
 [TOC](#toc---table-of-contents)

@@ -142,7 +142,7 @@ defmodule Todos.Context do
   end
 
   defp _handle_missing_user_for(action) do
-    Logger.debug("User missing in the context for action :#{action}?")
+    Logger.warn("User missing in the context for action :#{action}?")
     {:error, @whoops}
   end
 end
