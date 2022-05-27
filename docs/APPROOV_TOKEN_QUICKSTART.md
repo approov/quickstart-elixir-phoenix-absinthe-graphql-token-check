@@ -1,6 +1,6 @@
 # Approov Token Quickstart
 
-This quickstart is for developers familiar with Phoenix who are looking for a quick intro into how they can add [Approov](https://approov.io) into an existing project. Therefore this will guide you through the necessary steps for adding Approov to an existing Elixir Phoenix Absinthe GraphQL server.
+This quickstart is for developers familiar with Phoenix who are looking for a quick intro into how they can add [Approov](httpS://approov.io) into an existing project. Therefore this will guide you through the necessary steps for adding Approov to an existing Elixir Phoenix Absinthe GraphQL server.
 
 ## TOC - Table of Contents
 
@@ -14,14 +14,14 @@ This quickstart is for developers familiar with Phoenix who are looking for a qu
 
 ## Why?
 
-To lock down your GraphQL API server to your mobile app. Please read the brief summary in the [README](/README.md#why) at the root of this repo or visit our [website](https://approov.io/product.html) for more details.
+To lock down your GraphQL API server to your mobile app. Please read the brief summary in the [Approov Overview](/OVERVIEW.md#why) at the root of this repo or visit our [website](httpS://approov.io/product) for more details.
 
 [TOC](#toc---table-of-contents)
 
 
 ## How it works?
 
-For more background on Approov, see the overview in the [README](/README.md#how-it-works) at the root of this repo.
+For more background on Approov, see the [Approov Overview](/OVERVIEW.md#how-it-works) at the root of this repo.
 
 ### Approov Token Check
 
@@ -35,8 +35,8 @@ Take a look at the [Approov Token Plug](/src/approov-protected-server/token-chec
 
 To complete this quickstart you will need both the Phoenix and the Approov CLI tool installed.
 
-* Phoenix - Follow the official installation instructions from [here](https://hexdocs.pm/phoenix/installation.html#content)
-* Approov CLI - Follow our [installation instructions](https://approov.io/docs/latest/approov-installation/#approov-tool) and read more about each command and its options in the [documentation reference](https://approov.io/docs/latest/approov-cli-tool-reference/)
+* Phoenix - Follow the official installation instructions from [here](httpS://hexdocs.pm/phoenix/installation.html#content)
+* Approov CLI - Follow our [installation instructions](httpS://approov.io/docs/latest/approov-installation/#approov-tool) and read more about each command and its options in the [documentation reference](httpS://approov.io/docs/latest/approov-cli-tool-reference/)
 
 [TOC](#toc---table-of-contents)
 
@@ -51,31 +51,35 @@ Approov needs to know the domain name of the API for which it will issue tokens.
 
 Add it with:
 
-```text
+```bash
 approov api -add your.api.domain.com
 ```
 
-Adding the API domain also configures the [dynamic certificate pinning](https://approov.io/docs/latest/approov-usage-documentation/#approov-dynamic-pinning) setup, out of the box.
+Adding the API domain also configures the [dynamic certificate pinning](httpS://approov.io/docs/latest/approov-usage-documentation/#approov-dynamic-pinning) setup, out of the box.
 
 > **NOTE:** By default the pin is extracted from the public key of the leaf certificate served by the domain, as visible to the box executing the Approov CLI command and the Approov servers.
 
 ### Approov Secret
 
-Approov tokens are signed with a symmetric secret. To verify tokens, we need to grab the secret using the [Approov secret command](https://approov.io/docs/latest/approov-cli-tool-reference/#secret-command) and plug it into the Elixir Phoenix Absinthe GraphQL server environment to check the signatures of the [Approov Tokens](https://www.approov.io/docs/latest/approov-usage-documentation/#approov-tokens) that it processes.
+Approov tokens are signed with a symmetric secret. To verify tokens, we need to grab the secret using the [Approov secret command](httpS://approov.io/docs/latest/approov-cli-tool-reference/#secret-command) and plug it into the Elixir Phoenix Absinthe GraphQL server environment to check the signatures of the [Approov Tokens](httpS://www.approov.io/docs/latest/approov-usage-documentation/#approov-tokens) that it processes.
 
-Retrieve the Approov secret with:
+First, enable your Approov `admin` role with:
 
-```text
+```bash
+eval `approov role admin`
+````
+
+Next, retrieve the Approov secret with:
+
+```bash
 approov secret -get base64url
 ```
-
-> **NOTE:** The `approov secret` command requires an [administration role](https://approov.io/docs/latest/approov-usage-documentation/#account-access-roles) to execute successfully.
 
 #### Set the Approov Secret
 
 Export the Approov secret into the environment:
 
-```text
+```bash
 export APPROOV_BASE64URL_SECRET=approov_base64url_secret_here
 ```
 
@@ -93,7 +97,7 @@ approov_secret =
     raise "Environment variable APPROOV_BASE64URL_SECRET is missing."
 
 config :YOUR_APP, ApproovToken,
-  secret_key: approov_secret
+  secret_key: approov_secret |> Base.url_decode64!(padding: false)
 ```
 
 The runtime configuration will run every-time a release or a Mix project is started.
@@ -114,7 +118,7 @@ approov_secret =
     raise "Environment variable APPROOV_BASE64URL_SECRET is missing."
 
 config :YOUR_APP, ApproovToken,
-  secret_key: approov_secret
+  secret_key: approov_secret |> Base.url_decode64!(padding: false)
 
 config :YOUR_APP, YOUR_APP.Endpoint, server: true
 ```
@@ -133,13 +137,13 @@ With this approach you are in fact emulating the Elixir `1.11` behaviour for the
 
 ##### Until Elixir 1.8
 
-Until Elixir `1.8` version no official way existed of reading values for each time the server was started from a release or a Mix project, and lots of different workarounds existed, and you can see some of them being discussed in the Elixir Forum, like in this [topic](https://elixirforum.com/t/phoenix-distillery-kubernetes-and-runtime-env-variables/13399).
+Until Elixir `1.8` version no official way existed of reading values for each time the server was started from a release or a Mix project, and lots of different workarounds existed, and you can see some of them being discussed in the Elixir Forum, like in this [topic](httpS://elixirforum.com/t/phoenix-distillery-kubernetes-and-runtime-env-variables/13399).
 
 [TOC](#toc---table-of-contents)
 
 ## Approov Token Check
 
-To check the Approov token we will use the [potatosalad/erlang-jose](https://github.com/potatosalad/erlang-jose) package.
+To check the Approov token we will use the [joken-elixir/joken](httpS://github.com/joken-elixir/joken) package.
 
 First, add the [Approov Token Plug](/src/approov-protected-server/token-check/todo/lib/todo_web/plugs/approov_token_plug.ex) module to your project at `lib/your_app_web/plugs/approov_token_plug.ex`:
 
@@ -152,7 +156,7 @@ defmodule YourAppWeb.ApproovTokenPlug do
   #   * init/1
   #   * call/2
   #
-  # @link https://hexdocs.pm/phoenix/plug.html#module-plugs
+  # @link httpS://hexdocs.pm/phoenix/plug.html#module-plugs
   ##############################################################################
 
   # Don't use this function to init the Plug with the Approov secret, because
@@ -161,29 +165,35 @@ defmodule YourAppWeb.ApproovTokenPlug do
   # environment where the release is running.
   def init(opts), do: opts
 
+  # Allows to use the GraphqiQL web interface without requiring the Approov
+  # token that is required for all requests in production.
+  if Mix.env() in [:dev, :test] do
+    # Allows to load the web interface for GraphiQL at `example.com/graphiql`
+    # without checking for the Approov token.
+    def call(%{method: "GET", request_path: "/graphiql"} = conn, _options), do: conn
+
+    # The GraphqiQL web interface does some introspection queries to help with
+    # validation and auto-completion, therefore we must allow them without
+    # the need for an Approov token.
+    def call(%{method: "POST", request_path: "/graphiql", params: %{"query" => "\n  query IntrospectionQuery" <> _query}} = conn, _options), do: conn
+  end
+
   def call(conn, _opts) do
+    case ApproovToken.verify_token(conn) do
+      {:ok, approov_token_claims} ->
+        conn
+        |> Plug.Conn.put_private(:approov_token_claims, approov_token_claims)
 
-    # Check the `init/1` comment to see why we don't do it there.
-    approov_jwk = %{
-      "kty" => "oct",
-      "k" =>  Application.get_env(:YOUR_APP, ApproovToken)[:secret_key]
-    }
-
-    with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
-      conn
-      |> Plug.Conn.put_private(:approov_token_claims, approov_token_claims)
-    else
-      {:error, reason} ->
-        _log_error(reason)
-
+      {:error, _reason} ->
         conn
         |> _halt_connection()
     end
   end
 
-  defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))
-  defp _log_error(reason), do: Logger.warn(reason)
-
+  # When the Approov token validation fails we return a `401` with an empty body,
+  # because we don't want to give clues to an attacker about the reason the
+  # request failed, and you can go even further by returning a `400`. Feel free
+  # to modify as you see fits best your use case.
   defp _halt_connection(conn) do
     conn
     |> Plug.Conn.put_status(401)
@@ -201,99 +211,76 @@ Next, add the [Approov Token](/src/approov-protected-server/token-check/todo/lib
 defmodule ApproovToken do
   require Logger
 
-  def verify(%Plug.Conn{} = conn, %{} = approov_jwk) do
-    with {:ok, approov_token} <- _get_approov_token_header(conn),
-         {:ok, approov_token_claims} <- _verify_approov_token(approov_token, approov_jwk) do
+  use Joken.Config
 
-      {:ok, approov_token_claims}
-    else
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
+  @impl Joken.Config
+  def token_config, do: default_claims(skip: [:aud, :iat, :iss, :jti, :nbf])
 
-  def verify(%{} = params, %{} = approov_jwk) do
+  # Verifies the token from an HTTP request or from a Websockets connection/event
+  def verify_token(params) do
     with {:ok, approov_token} <- _get_approov_token(params),
-         {:ok, approov_token_claims} <- _verify_approov_token(approov_token, approov_jwk) do
+         {:ok, approov_token_claims} <- _decode_and_verify(approov_token) do
 
       {:ok, approov_token_claims}
     else
       {:error, reason} ->
+        Logger.info(%{approov_token_error: reason})
         {:error, reason}
     end
   end
 
-  defp _get_approov_token_header(conn) do
-    case Plug.Conn.get_req_header(conn, "approov-token") do
+
+  ########################
+  # APPROOV TOKEN FETCH
+  ########################
+
+  # For when the Approov token is the header of a regular HTTP Request
+  defp _get_approov_token(%Plug.Conn{} = conn) do
+    case Plug.Conn.get_req_header(conn, "x-approov-token") do
       [] ->
-        Logger.debug("Approov token not in the headers. Next, try to retrieve from url query params.")
+        Logger.info("Approov token not in the headers. Next, try to retrieve from url query params.")
+        Logger.info(%{headers: conn.req_headers, params: conn.params})
         _get_approov_token(conn.params)
 
       [approov_token | _] ->
-
         {:ok, approov_token}
     end
   end
 
-  defp _get_approov_token(%{"Approov-Token" => token}) when is_binary(token), do: {:ok, token}
-  defp _get_approov_token(_params), do: {:error, :missing_approov_token}
+  # Fetch for a Phoenix Channel event, where the token is provided in the event
+  # payload.
+  defp _get_approov_token(%{"x-approov-token" => approov_token}), do: {:ok, approov_token}
+  defp _get_approov_token(%{"X-Approov-Token" => approov_token}), do: {:ok, approov_token}
 
-  defp _verify_approov_token(approov_token, approov_jwk) do
-    with {:ok, approov_token_claims} <- _decode_and_verify(approov_token, approov_jwk),
-         true <- _has_expiration_claim?(approov_token_claims),
-         :ok <- _verify_expiration(approov_token_claims) do
-      {:ok, approov_token_claims}
-    else
-      {:error, reason} ->
-        {:error, reason}
+  # Catch failure to fetch the Approov token from the WebSocket upgrade request
+  # or from the Phoenix Channel event.
+  defp _get_approov_token(_params) do
+    {:error, :missing_approov_token}
+  end
 
-      false ->
-        {:error, :approov_token_missing_expiration_claim}
+
+  ########################
+  # APPROOV TOKEN CHECK
+  ########################
+
+  defp _decode_and_verify(approov_token) do
+    secret = Application.fetch_env!(:todo, ApproovToken)[:secret_key]
+
+    # call `verify_and_validate/2` injected by `use Joken.Config`
+    case verify_and_validate(approov_token, Joken.Signer.create("HS256", secret)) do
+      {:ok, %{"exp" => _expiration}} = result ->
+        result
+
+      # The library only checks the `exp` when present, and verifies successfully
+      # without it, and doesn't have an option to enforce it.
+      {:ok, _claims} ->
+        {:error, :missing_expiration_time}
+
+      result ->
+        result
     end
   end
 
-  defp _decode_and_verify(approov_token, approov_jwk) do
-    case JOSE.JWT.verify_strict(approov_jwk, ["HS256"], approov_token) do
-      {true, approov_token_claims, _jws} ->
-        {:ok, approov_token_claims}
-
-      {false, _approov_token_claims, _jws} ->
-        {:error, :approov_token_invalid_signature}
-
-      {:error, {:badarg, _arg}} ->
-        {:error, :approov_token_malformed}
-
-      {:error, _reason} ->
-        {:error, :jwt_library_internal_error}
-    end
-  end
-
-  defp _has_expiration_claim?(%JOSE.JWT{fields: %{"exp" => _exp}}), do: true
-  defp _has_expiration_claim?(_approov_token_claims), do: false
-
-  defp _verify_expiration(%JOSE.JWT{fields: %{"exp" => timestamp}}) do
-    datetime = _timestamp_to_datetime(timestamp)
-    now = DateTime.utc_now()
-
-    case DateTime.compare(now, datetime) do
-      :lt ->
-        :ok
-
-      _ ->
-        {:error, :approov_token_expired}
-    end
-  end
-
-  defp _timestamp_to_datetime(timestamp) when is_integer(timestamp) do
-    DateTime.from_unix!(timestamp)
-  end
-
-  defp _timestamp_to_datetime(timestamp) when is_float(timestamp) do
-    # iex> Integer.parse "1555083349.3777623"
-    # {1555083349, ".3777623"}
-    {timestamp, _decimals} = Integer.parse("#{timestamp}")
-    DateTime.from_unix!(timestamp)
-  end
 end
 ```
 
@@ -314,20 +301,38 @@ pipeline :graphql do
   plug YourAppWeb.AbsintheContextPlug
 end
 
-scope "/" do
+scope "/auth" do
   pipe_through :api
   pipe_through :approov_token
 
-  post "/auth/signup", YourAppWeb.AuthController, :signup
-  post "/auth/login", YourAppWeb.AuthController, :login
+  post "/signup", YourAppWeb.AuthController, :signup
+  post "/login", YourAppWeb.AuthController, :login
 end
 
+# The `/graphiql` endpoint exposes too much to attackers, thus it shouldn't
+# be available in production.
+if Mix.env() in [:dev, :test] do
+  scope "/graphiql" do
+    pipe_through :approov_token
+    pipe_through :graphql
+
+    forward "/", Absinthe.Plug.GraphiQL,
+      schema: YourAppWeb.Schema,
+      socket: YourAppWeb.UserSocket,
+      log: false
+  end
+end
+
+# Needs to be after the /graphiql endpoint scope, otherwise we get this API,
+# instead of the expected /graphiql web interface.
 scope "/" do
   pipe_through :api
   pipe_through :approov_token
   pipe_through :graphql
 
-  forward "/", Absinthe.Plug, schema: YourAppWeb.Schema
+  forward "/", Absinthe.Plug,
+    schema: YourAppWeb.Schema,
+    log: false
 end
 ```
 
@@ -338,9 +343,9 @@ A full working example for a simple Todo GraphQL server can be found at [src/app
 
 ## Approov Websocket Token Check
 
-This step is only necessary if you want to protect the HTTPs request to establish a socket connection, like when Absinthe subscriptions or Phoenix Channels are used.
+This step is only necessary if you want to protect the HTTPS request to establish a socket connection, like when Absinthe subscriptions or Phoenix Channels are used.
 
-Unfortunately the Phoenix socket implementation only allows to retrieve headers from the HTTPs request establishing the socket connection when they start with an `x`, also known as the prefix for non standard HTTPs headers.
+Unfortunately the Phoenix socket implementation only allows to retrieve headers from the HTTPS request establishing the socket connection when they start with an `x`, also known as the prefix for non standard HTTPS headers.
 
 To enable retrieving the `x` headers, add `connect_info: [:x_headers]` to your socket configuration in the file `endpoint.ex`. It should look similar to this:
 
@@ -356,9 +361,9 @@ socket "/socket", YourAppWeb.UserSocket,
   ],
 ```
 
-This will enable to retrieve the `X_Approov_Token` header from the HTTPs request establishing the socket connection and will make it available under the second parameter in the `connect/2` callback when implementing the `PhoenixSocket` behaviour, that usually is named as `connect_info`.
+This will enable to retrieve the `X-Approov-Token` header from the HTTPS request establishing the socket connection and will make it available under the second parameter in the `connect/2` callback when implementing the `PhoenixSocket` behaviour, that usually is named as `connect_info`.
 
-To perform the Approov token check for when a websocket connection is established you need to modify the Phoenix socket behaviour implementation for `connect/2` to check the Approov token with a call to `ApproovToken.verify(connect_info, _approov_jwk())`, just like you have done before in the ApproovTokenPlug for protecting the HTTPs requests.
+To perform the Approov token check for when a websocket connection is established you need to modify the Phoenix socket behaviour implementation for `connect/2` to check the Approov token with a call to `ApproovToken.verify(connect_info, _approov_jwk())`, just like you have done before in the ApproovTokenPlug for protecting the HTTPS requests.
 
 Example of a simplified Phoenix Socket behaviour implementation with the Approov token check:
 
@@ -370,35 +375,43 @@ defmodule YourAppWeb.UserSocket do
 
   use Absinthe.Phoenix.Socket, schema: YourAppWeb.Schema
 
+  require Logger
+
   @impl true
   def connect(params, socket, connect_info) do
-    with {:ok, _approov_token_claims} <- ApproovToken.verify(connect_info, _approov_jwk()),
-         # The user Authorization header is part of the url query parameters due to the Phoenix Socket limitation.
-         {:ok, current_user} <- YourApp.User.authorize(params: params) do
+    Logger.info(%{socket_connect_params: params})
+    Logger.info(%{socket_connect_info: connect_info})
 
-      socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{current_user: current_user})
-
-      {:ok, socket}
-    else
-      {:error, reason} ->
-        _log_error(reason)
-        :error
-    end
+    socket
+    |> _authorize(params, connect_info)
   end
 
   @impl true
   def id(_socket), do: nil
 
-  defp _approov_jwk() do
-    %{
-      "kty" => "oct",
-      "k" =>  Application.fetch_env!(:YOUR_APP, ApproovToken)[:secret_key]
-    }
+  defp _authorize(socket, params, connect_info) do
+
+    # We need to merge them because the requests from the GraphiQL web interface
+    # doesn't populate the `connect_info` with the Approov token.
+    headers = Map.merge(params, connect_info)
+
+    # Always perform the Approov token check before the User Authentication.
+    with {:ok, _approov_token_claims} <- ApproovToken.verify_token(headers),
+         {:ok, current_user} <- Todos.User.authorize(params: params) do
+
+      socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{current_user: current_user})
+
+      {:ok, socket}
+    else
+      {:error, _reason} ->
+        :error
+    end
   end
 end
 ```
 
-> **NOTE:** Putting sensitive data in an url query parameter is not a best security practice, thus you should avoid as much as possible to put it there. You may think that once the request is over https it isn't an issue, but you need to remember that the full url, including the query parameters, are often logged by applications, load balancers, API gateways, etc., thus causing any sensitive data on them to be leaked to the logs. Attackers usually build their attacks based on a chain of exploits, like getting the token from a compromised logging server and subsequently use it on automated or manual attacks. Just search in `shodan.io` for your logging server of choice to see how many are left accidentally publicly exposed to the internet, and attackers have automated tools scanning non-stop for them.
+
+> **NOTE:** Putting sensitive data in an url query parameter is not a best security practice, thus you should avoid as much as possible to put it there. You may think that once the request is over httpS it isn't an issue, but you need to remember that the full url, including the query parameters, are often logged by applications, load balancers, API gateways, etc., thus causing any sensitive data on them to be leaked to the logs. Attackers usually build their attacks based on a chain of exploits, like getting the token from a compromised logging server and subsequently use it on automated or manual attacks. Just search in `shodan.io` for your logging server of choice to see how many are left accidentally publicly exposed to the internet, and attackers have automated tools scanning non-stop for them.
 
 [TOC](#toc---table-of-contents)
 
@@ -411,14 +424,14 @@ The following examples below use cURL, but you can also use the `graphiql/graphi
 
 Generate a valid token example from the Approov Cloud service:
 
-```text
+```bash
 approov token -genExample your.api.domain.com
 ```
 
 Let's signup the user in the Approov protected endpoint:
 
-```text
-curl -i --request POST 'https://your.api.domain.com/auth/signup' \
+```bash
+curl -i --request POST 'httpS://your.api.domain.com/auth/signup' \
   --header 'X-Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
   --data username=test@mail.com \
   --data password=your-pass-here
@@ -435,7 +448,7 @@ HTTP/2 200
 
 Next, let's login the user in the Approov protected endpoint:
 
-```text
+```bash
 curl -i --request POST 'your.api.domain.com/auth/login' \
   --header 'X-Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
   --data username=test@mail.com \
@@ -460,13 +473,13 @@ Finally we have the Bearer Authorization token that is required to represent a l
 
 Generate a valid token example from the Approov Cloud service:
 
-```text
+```bash
 approov token -genExample your.api.domain.com
 ```
 
 Then make the request with the generated token:
 
-```text
+```bash
 curl -i --request POST 'your.api.domain.com' \
   --header 'X-Approov-Token: APPROOV_VALID_TOKEN_EXAMPLE_HERE' \
   --header 'Authorization: Bearer AUTHORIZATION_VALID_TOKEN' \
@@ -488,13 +501,13 @@ HTTP/2 200
 
 Generate an invalid token example from the Approov Cloud service:
 
-```text
+```bash
 approov token -type invalid -genExample your.api.domain.com
 ```
 
 Then make the request with the generated token:
 
-```text
+```bash
 curl -i --request POST 'your.api.domain.com' \
   --header 'X-Approov-Token: APPROOV_INVALID_TOKEN_EXAMPLE_HERE' \
   --header 'Authorization: Bearer AUTHORIZATION_VALID_TOKEN' \
@@ -525,19 +538,19 @@ You can test the Absinthe Socket subscriptions by using the Absinthe Graphiql we
 
 > **ALERT:** If you have the GraphiQL web interface enabled in a server accessible from the internet, then we strongly advise you to protect it with user Authentication and/or IP address white-list. For example, something like the `TodoWeb.LiveViewDashboardAuthPlug` used in the server examples of this repo, that are based on the `Plug.BasicAuth` package.
 
-Another alternative is to use an online websocket client from a browser, and you can check this [Stackoverflow question](https://stackoverflow.com/questions/42269075/websocket-connections-with-postman) to see some suggestions.
+Another alternative is to use an online websocket client from a browser, and you can check this [Stackoverflow question](httpS://stackoverflow.com/questions/42269075/websocket-connections-with-postman) to see some suggestions.
 
 Remember that for establishing the websocket connection you need to set the `X-Approov-Token` header in the request.
 
 To generate a valid token example from the Approov Cloud service:
 
-```text
+```bash
 approov token -genExample your.api.domain.com
 ```
 
 To generate an invalid token example from the Approov Cloud service:
 
-```text
+```bash
 approov token -type invalid -genExample your.api.domain.com
 ```
 

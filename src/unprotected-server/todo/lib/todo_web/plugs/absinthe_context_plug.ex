@@ -5,13 +5,20 @@ defmodule TodoWeb.AbsintheContextPlug do
 
   def init(opts), do: opts
 
-  # Allows to load the web interface for GraphiQL at `example.com/graphiql`
-  # without checking for the Authorization token.
-  def call(%{method: "GET", request_path: "/graphiql", query_string: ""} = conn, _options) do
-    conn
+  # Allows to use the GraphqiQL web interface without requiring the user
+  # authentication that is required for all requests in production.
+  if Mix.env() in [:dev, :test] do
+    # Allows to load the web interface for GraphiQL at `example.com/graphiql`
+    # without checking for the Authorization token.
+    def call(%{method: "GET", request_path: "/graphiql"} = conn, _options), do: conn
+
+    # The GraphqiQL web interface does some introspection queries to help with
+    # validation and auto-completion, therefore we must allow them without
+    # authenticating the user.
+    def call(%{method: "POST", request_path: "/graphiql", params: %{"query" => "\n  query IntrospectionQuery" <> _query}} = conn, _options), do: conn
   end
 
-  def call(conn, _) do
+  def call(conn, _options) do
     conn
     |> _authorize()
   end

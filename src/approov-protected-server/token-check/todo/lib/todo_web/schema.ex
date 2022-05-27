@@ -93,7 +93,7 @@ defmodule TodoWeb.Schema do
 
           end
 
-        args, %{context: _resolver_info} ->
+        _args, %{context: _resolver_info} ->
           Logger.warn("Missing current user when subscribing to the :fetch_online_users event")
           {:error, "Could not subscribe to the :fetch_online_users event"}
       end

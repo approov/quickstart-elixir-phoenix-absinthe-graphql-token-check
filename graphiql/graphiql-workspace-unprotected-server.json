@@ -21,15 +21,15 @@
   "maxHistory": 20,
   "savedQueries": [
     {
-      "query": "subscription { todoAdded(topic: \"todos\") { id, title, completed } }",
-      "variables": ""
+      "query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, isPublic: false) {\n    id\n    title\n    isCompleted\n  }\n}",
+      "variables": "{\"title\": \"task 1\"}"
     },
     {
-      "query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
-      "variables": "{\"title\": \"task 1\"}"
+      "query": "subscription { fetchOnlineUsers(topic: \"online_users\") { lastSeen } }",
+      "variables": ""
     }
   ],
-  "activeId": "tab1",
+  "activeId": "tab2",
   "tabs": [
     {
       "id": "tab1",
@@ -40,17 +40,17 @@
       "headers": [
         {
           "name": "Authorization",
-          "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          "value": "Bearer QTEyOEdDTQ.-P8rvvwtMDaJkyxVN4vgVSfY_U1I3m_XWCxIOj7aDQVFmOLs0YtDQC_exWw.BwBRmPO5dbpiOz3d.2U8roUjOLSs6IvjwQ8uvuQUUvVqcifO8KqMI2x6Qyf8qnLE8Fv_rSMtC0smSeL6L7HequviCAurBRO1N6-RNwVXTfA_hcay6QpVwyPhMTaNqOI4VzgF2crdYTqChKqemOA.fkYXjfcvPHu9bvk1rUYMnQ"
         }
       ],
       "collapsed": false,
       "maxHistory": 20,
       "history": [],
-      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, isPublic: false) {\n    id\n    title\n    isCompleted\n  }\n}",
       "graphiql:variables": "{\"title\": \"task 1\"}",
-      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 1\\\"}\",\"operationName\":\"CreateTodo\"}]}",
+      "graphiql:queries": "",
       "graphiql:editorFlex": 1,
-      "graphiql:variableEditorHeight": 200,
+      "graphiql:variableEditorHeight": 222,
       "graphiql:docExplorerWidth": 350,
       "graphiql:operationName": "CreateTodo"
     },
@@ -64,13 +64,13 @@
       "collapsed": false,
       "maxHistory": 20,
       "history": [],
-      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, completed: false) {\n    id\n    title\n    completed\n  }\n}",
+      "graphiql:query": "mutation CreateTodo($title: String!) {\n  createTodo(title: $title, isPublic: false) {\n    id\n    title\n    isCompleted\n  }\n}",
       "graphiql:variables": "{\"title\": \"task 2\"}",
+      "graphiql:editorFlex": 1,
+      "graphiql:queries": "",
       "graphiql:operationName": "CreateTodo",
-      "graphiql:queries": "{\"queries\":[{\"query\":\"mutation CreateTodo($title: String!) {\\n  createTodo(title: $title, completed: false) {\\n    id\\n    title\\n    completed\\n  }\\n}\",\"variables\":\"{\\\"title\\\": \\\"task 2\\\"}\",\"operationName\":\"CreateTodo\"}]}",
       "graphiql:docExplorerWidth": 350,
-      "graphiql:variableEditorHeight": 198,
-      "graphiql:editorFlex": 1
+      "graphiql:variableEditorHeight": 198
     }
   ]
 }

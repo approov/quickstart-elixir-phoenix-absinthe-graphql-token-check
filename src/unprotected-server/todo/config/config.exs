@@ -10,7 +10,10 @@ use Mix.Config
 # Configures the endpoint
 config :todo, TodoWeb.Endpoint,
   render_errors: [view: TodoWeb.ErrorView, accepts: ~w(json), layout: false],
-  pubsub_server: Todo.PubSub
+  pubsub_server: Todo.PubSub,
+    # will be overridden in dev.exs to allow for using the GraphiQL web interface
+  # work-spaces with the same Authorization tokens.
+  user_token_max_age: 86400
 
 # Configures Elixir's Logger
 config :logger, :console,

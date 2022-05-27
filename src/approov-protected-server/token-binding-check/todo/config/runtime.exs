@@ -25,7 +25,7 @@ url_public_port = load_from_env.("URL_PUBLIC_PORT", "443")
 url_public = "#{url_public_scheme}://#{url_public_host}"
 
 config :todo, ApproovToken,
-  secret_key: load_from_env.("APPROOV_BASE64URL_SECRET", nil)
+  secret_key: load_from_env.("APPROOV_BASE64URL_SECRET", nil) |> Base.url_decode64!(padding: false)
 
 # ## Using releases (Elixir v1.9+)
 #
@@ -53,6 +53,11 @@ config :todo, TodoWeb.Endpoint,
   live_view: [signing_salt: load_from_env.("LIVE_VIEW_SIGNING_SALT", nil)],
   live_view_dashboard_user: load_from_env.("LIVE_VIEW_DASHBOARD_USER", nil),
   live_view_dashboard_password: Bcrypt.hash_pwd_salt(load_from_env.("LIVE_VIEW_DASHBOARD_PASSWORD", nil))
+
+config :absinthe,
+  log: false
+
+config :phoenix, :logger, false
 
 #
 # Then you can assemble a release by calling `mix release`.

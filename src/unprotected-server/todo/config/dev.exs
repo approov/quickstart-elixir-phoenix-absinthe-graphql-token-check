@@ -9,7 +9,8 @@ use Mix.Config
 config :todo, TodoWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
-  watchers: []
+  watchers: [],
+  user_token_max_age: :infinity
 
 # ## SSL Support
 #

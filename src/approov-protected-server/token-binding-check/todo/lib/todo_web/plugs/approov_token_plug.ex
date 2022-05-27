@@ -1,5 +1,4 @@
 defmodule TodoWeb.ApproovTokenPlug do
-  require Logger
 
   ##############################################################################
   # Adhere to the Phoenix Module Plugs specification by implementing:
@@ -15,33 +14,40 @@ defmodule TodoWeb.ApproovTokenPlug do
   # environment where the release is running.
   def init(opts), do: opts
 
+  # Allows to use the GraphqiQL web interface without requiring the Approov
+  # token that is required for all requests in production.
+  if Mix.env() in [:dev, :test] do
+    # Allows to load the web interface for GraphiQL at `example.com/graphiql`
+    # without checking for the Approov token.
+    def call(%{method: "GET", request_path: "/graphiql"} = conn, _options), do: conn
+
+    # The GraphqiQL web interface does some introspection queries to help with
+    # validation and auto-completion, therefore we must allow them without
+    # the need for an Approov token.
+    def call(%{method: "POST", request_path: "/graphiql", params: %{"query" => "\n  query IntrospectionQuery" <> _query}} = conn, _options), do: conn
+  end
+
   def call(conn, _opts) do
+    case ApproovToken.verify_token(conn) do
+      {:ok, approov_token_claims} ->
+        conn
+        |> Plug.Conn.put_private(:approov_token_claims, approov_token_claims)
 
-    # Check the `init/1` comment to see why we don't do it there.
-    approov_jwk = %{
-      "kty" => "oct",
-      "k" =>  Application.get_env(:todo, ApproovToken)[:secret_key]
-    }
-
-    with {:ok, approov_token_claims} <- ApproovToken.verify(conn, approov_jwk) do
-      conn
-      |> Plug.Conn.put_private(:approov_token_claims, approov_token_claims)
-    else
-      {:error, reason} ->
-        _log_error(reason)
-
+      {:error, _reason} ->
         conn
         |> _halt_connection()
     end
   end
 
-  defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))
-  defp _log_error(reason), do: Logger.warn(reason)
-
+  # When the Approov token validation fails we return a `401` with an empty body,
+  # because we don't want to give clues to an attacker about the reason the
+  # request failed, and you can go even further by returning a `400`. Feel free
+  # to modify as you see fits best your use case.
   defp _halt_connection(conn) do
     conn
     |> Plug.Conn.put_status(401)
     |> Phoenix.Controller.json(%{})
     |> Plug.Conn.halt()
   end
+
 end

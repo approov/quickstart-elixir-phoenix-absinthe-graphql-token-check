@@ -41,7 +41,7 @@ defmodule Todo.MixProject do
       {:bcrypt_elixir, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.1"},
       {:absinthe_phoenix, "~> 2.0.0"},
-      {:jose, "~> 1.10.1"},
+      {:joken, "~> 2.4"},
     ]
   end
 

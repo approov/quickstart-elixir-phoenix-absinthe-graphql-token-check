@@ -18,29 +18,20 @@ defmodule TodoWeb.UserSocket do
   def id(_socket), do: nil
 
   defp _authorize(socket, params, connect_info) do
-    # Add your user authentication logic here as you see fit. For example:
-    with {:ok, approov_token_claims} <- ApproovToken.verify(connect_info, _approov_jwk()),
-         :ok <- ApproovToken.verify_token_binding(approov_token_claims, params),
+    # We need to merge them because the requests from the GraphiQL web interface doesn't populate the `connect_info` with the Approov token.
+    headers = Map.merge(params, connect_info)
+
+    # Always perform the Approov token check before the User Authentication.
+    with {:ok, _approov_token_claims} <- ApproovToken.verify_token(headers),
          {:ok, current_user} <- Todos.User.authorize(params: params) do
 
       socket = Absinthe.Phoenix.Socket.put_options(socket, context: %{current_user: current_user})
 
       {:ok, socket}
     else
-      {:error, reason} ->
-        _log_error(reason)
+      {:error, _reason} ->
         :error
     end
   end
-
-  defp _approov_jwk() do
-    %{
-      "kty" => "oct",
-      "k" =>  Application.fetch_env!(:todo, ApproovToken)[:secret_key]
-    }
-  end
-
-  defp _log_error(reason) when is_atom(reason), do: Logger.warn(Atom.to_string(reason))
-  defp _log_error(reason), do: Logger.warn(reason)
 
 end

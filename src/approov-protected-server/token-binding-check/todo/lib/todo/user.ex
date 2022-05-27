@@ -81,8 +81,10 @@ defmodule Todos.User do
   end
 
   defp _decrypt_token(token) do
-    # Valid for 1 day: 86400
-    Phoenix.Token.decrypt(Utils.secret_key_base(), Utils.encryption_secret(), token, max_age: 86400)
+    # Valid for :infinity in dev in order to be able to use the tokens in the
+    # GraphiQL web interface.
+    max_age = Application.fetch_env!(:todo, TodoWeb.Endpoint)[:user_token_max_age]
+    Phoenix.Token.decrypt(Utils.secret_key_base(), Utils.encryption_secret(), token, max_age: max_age)
   end
 
   def authorize(token: "Bearer " <> token) when is_binary(token) do

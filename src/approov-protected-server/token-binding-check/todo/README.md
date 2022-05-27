@@ -12,7 +12,7 @@ This Approov integration example is from where the code example for the [Approov
 
 ## Why?
 
-To lock down your GraphQL server to your mobile app. Please read the brief summary in the [README](/README.md#why) at the root of this repo or visit our [website](https://approov.io/product.html) for more details.
+To lock down your GraphQL server to your mobile app. Please read the brief summary in the [Approov Overview](/OVERVIEW.md#why) at the root of this repo or visit our [website](https://approov.io/product) for more details.
 
 [TOC](#toc---table-of-contents)
 
@@ -27,7 +27,7 @@ The server replies to the endpoint `/` for all the [Todo app](https://github.com
 
 Take a look at the [Approov Token Plug](/src/approov-protected-server/token-check/todo/lib/todo_web/plugs/approov_token_plug.ex) module to see how the Approov token check is invoked in the `call/2` function. To see the simple code for the Approov token check, you need to look into the `verify/1` function in the [Approov Token](src/approov-protected-server/token-check/todo/lib/approov_token.ex) module.
 
-For more background on Approov, see the overview in the [README](/README.md#how-it-works) at the root of this repo.
+For more background on Approov, see the [Approov Overview](/OVERVIEW.md#how-it-works) at the root of this repo.
 
 ### Approov Token Binding Check
 
@@ -84,7 +84,48 @@ First, create the `.env` from `.env.example`:
 cp .env.example .env
 ```
 
-Now, edit the `.env` file and adjust the `APPROOV_BASE64URL_SECRET` accordingly. For localhost usage with the GraphiQL workspaces you need to set the secret as per described in the root [README.md](/README.md#testing-with-the-absinthe-graphiql-web-interface)
+For localhost usage with the GraphiQL workspaces provided on this repo you need to replace the secrets in the `.env` file with the dummy secrets that we used to sign the user Authorization Bearer tokens and the Approov tokens in the GraphiQL workpspaces [examples](/graphiql), that will be used for test purposes at the end of this Approov integration example.
+
+Replace the `.env` file content with the following:
+
+```bash
+# The internal http port used by the docker container to listen on Traefik
+HTTP_INTERNAL_PORT=8002
+
+URL_PUBLIC_SCHEME=http
+URL_PUBLIC_HOST=localhost
+URL_PUBLIC_PORT=8002
+
+# Generate one with:
+#  - mix phx.gen.secret 128
+#  - strings /dev/urandom | grep -o '[[:alpha:]]' | head -n 128 | tr -d '\n'; echo
+SECRET_KEY_BASE=ACnjQT227N6zeASRXlLxtDCAkAnAlFNgIDVYylnJe39PqJbVRytGH+JuNWnz7mIToJXUZX2O6PvOXn6gVrF9ymclOWxrerZAcmlHSXX37QtJruoGbt9UK0BO/w/xljB6
+
+# Generate one with:
+#  - mix phx.gen.secret 256
+#  - strings /dev/urandom | grep -o '[[:alpha:]]' | head -n 256 | tr -d '\n'; echo
+ENCRYPTION_SECRET=KkTeq6TFPVWqRKT/51VG+pwNajo73VAL8OZuxBjpcWfqWxW6mM3gwEkL9qPMxgWMFTPZ6tcVYXVXT+RVK56TjT7AXJ5cFbS0ssWSjlJ+Qao+761ys/WjZImbIBvenF3sSxNrTbCUYO3RdxUhBnB5xzJe15LPI+vP9WGFoO3bXA1vgALsebe8+pO1sxvv0zTvOBMLQbWHl+rbDK/d/4m4CG4mauc78kSGhCh0OtldShKVwzRl60rhKZtRsqliMZ16
+
+# Generate one with:
+#  - mix phx.gen.secret 64
+#  - strings /dev/urandom | grep -o '[[:alpha:]]' | head -n 64 | tr -d '\n'; echo
+PLUG_SESSION_SIGNING_SALT=5TEGaBIzT+60JrmKBlkkTgH1IhhBfjmLagwwk1o/4xk0wyxbMveZG4i+dJxVhrgy
+
+# Generate one with:
+#  - mix phx.gen.secret 64
+#  - strings /dev/urandom | grep -o '[[:alpha:]]' | head -n 64 | tr -d '\n'; echo
+LIVE_VIEW_SIGNING_SALT=QJNTYWy01ypT/2qib0oa0isVStGRGutMSfB1pdz+dhs7J+lgeZtmWNLX8u9JtAil
+
+# Stream logs in real-time at https://example.com/dashboard/request_logger
+LIVE_VIEW_DASHBOARD_USER=___NO_LESS_THEN_8_LENGTH_USER_NAME_HERE___
+LIVE_VIEW_DASHBOARD_PASSWORD=___NO_LESS_THEN_12_LENGTH_PASSWORD_HERE___
+
+# For production or during a trial of Approov get the secret with:
+#   - `approov secret -get base64url`
+# For use with the GraphiQL workspaces on this repo we have used OpenSSL to
+# genrate a dummy secret.
+APPROOV_BASE64URL_SECRET=h-CX0tOzdAAR9l15bWAqvq7w9olk66daIH-Xk-IAHhVVHszjDzeGobzNnqyRze3lw_WVyWrc2gZfh3XXfBOmww
+```
 
 ### Run the Server with your Elixir Stack
 
@@ -143,7 +184,39 @@ docker image ls | grep 'approov/quickstart-elixir-phoenix' | awk '{print $3}' | 
 
 ### Test with the Absinthe GraphiQL Web Interface
 
-Finally, you can test that it works by using the Absinthe Graphiql web interface at http://localhost:8002/graphiql. To make it easier to test you can upload to the web interface this graphiql workspace: `graphiql/graphiql-workspace-approov-token-binding-check.json`.
+#### Create and Authenticate the User
+
+In order to run the tests you need to create an user that matches the `approov` user in the [GraphiQL workspaces](/graphiql).
+
+Run from your `iex` shell:
+
+```bash
+Todos.User.create %{"username" => "approov", "password" => "mysuperstrongpass"}
+```
+
+Next, you need to authenticate the user in order to enable it to be saved into the last seen `online_users` table in order for you to see the GrapQL subscription working during the tests.
+
+Run from your `iex` shell:
+
+```bash
+Todos.User.authenticate %{"username" => "approov", "password" => "mysuperstrongpass"}
+```
+
+The token in the output can be dismissed, because the [GraphiQL workspaces](/graphiql) already have valid Authorization tokens for the `approov` user.
+
+#### Ran the Tests
+
+Finally, you can test that it works by using the Absinthe GraphiQL web interface at http://localhost:8002/graphiql.
+
+To make it easier to test you can upload to the web interface this [GraphiQL workspace](/graphiql/graphiql-workspace-approov-token-binding-check.json). After loading the workspace into the GraphiQL web interface you need to refresh the web page and afterwards you can start using the GraphQL queries in the workspace.
+
+First, from the saved queries select the subscription query for `fetchOnlineUsers` and then click in the `play` button, and now you are listening to the last time an user as created a todo, and as mentioned in the message in red `Your subscription data will appear here after server publication!` you need to wait for something to happen, and you cannot close the current web apge or click anywhere on it in order to keep the subscription active.
+
+Next, open a new browser window at http://localhost:8002/graphiql and split your screen in order to have both side to side in order for you to see subscriptions working in realtime.
+
+Now, in the new browser window select the saved mutation query to create a todo and execute it to immediately see the subscription being updated in the other window.
+
+Until now everything worked fine because you are in the workspace tab with a valid Approov and user authentication token, but if you switch to the other tabs with invalids Approov tokens you will see how Appwoov will work to protect your backend. This time split your screen with the browser window for creating the todo with your terminal window where `iex` is running the Elixir server in order to watch in the logs the reason qhy the requests are being denied as you try each of the scenarios in the GraphiQL workspace.
 
 
 [TOC](#toc---table-of-contents)

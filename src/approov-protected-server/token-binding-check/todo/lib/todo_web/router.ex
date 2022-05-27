@@ -36,12 +36,12 @@ defmodule TodoWeb.Router do
     plug TodoWeb.AbsintheContextPlug
   end
 
-  scope "/" do
+  scope "/auth" do
     pipe_through :api
     pipe_through :approov_token
 
-    post "/auth/signup", TodoWeb.AuthController, :signup
-    post "/auth/login", TodoWeb.AuthController, :login
+    post "/signup", TodoWeb.AuthController, :signup
+    post "/login", TodoWeb.AuthController, :login
   end
 
   scope "/dashboard" do
@@ -49,19 +49,23 @@ defmodule TodoWeb.Router do
     live_dashboard "/"
   end
 
-  scope "/graphiql" do
-    pipe_through :api
-    pipe_through :graphql
+  # The `/graphiql` endpoint exposes too much to attackers, thus it shouldn't
+  # be available in production.
+  if Mix.env() in [:dev, :test] do
+    scope "/graphiql" do
+      pipe_through :approov_token
+      pipe_through :approov_token_binding
+      pipe_through :graphql
 
-    # The `/graphiql` endpoint exposes too much to attackers, thus in my opinion
-    # should not be available in production.
-    if Mix.env() in [:dev, :test] do
       forward "/", Absinthe.Plug.GraphiQL,
         schema: TodoWeb.Schema,
-        socket: TodoWeb.UserSocket
+        socket: TodoWeb.UserSocket,
+        log: false
     end
   end
 
+  # Needs to be after the /graphiql endpoint scope, otherwise we get this API,
+  # instead of the expected /graphiql web interface.
   scope "/" do
     pipe_through :api
     pipe_through :approov_token
@@ -69,7 +73,8 @@ defmodule TodoWeb.Router do
     pipe_through :graphql
 
     forward "/", Absinthe.Plug,
-      schema: TodoWeb.Schema
+      schema: TodoWeb.Schema,
+      log: false
   end
 
 end

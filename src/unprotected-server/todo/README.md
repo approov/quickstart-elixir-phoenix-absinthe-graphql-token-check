@@ -13,7 +13,7 @@ The unprotected example is the base reference to build the [Approov protected se
 
 ## Why?
 
-To be the starting building block for the [Approov protected servers](/src/approov-protected-server), that will show you how to lock down your API server to your mobile app. Please read the brief summary in the [README](/README.md#why) at the root of this repo or visit our [website](https://approov.io/product.html) for more details.
+To be the starting building block for the [Approov protected servers](/src/approov-protected-server), that will show you how to lock down your API server to your mobile app. Please read the brief summary in the [Approov Overview](/OVERVIEW.md#why) at the root of this repo or visit our [website](https://approov.io/product) for more details.
 
 [TOC](#toc---table-of-contents)
 
@@ -66,6 +66,7 @@ Create the `.env` from `.env.example`:
 ```text
 cp .env.example .env
 ```
+> **IMPORTANT:** Add the secrets as instructed in the `.env` file comments.
 
 ### Run the Server with your Elixir Stack
 
@@ -125,7 +126,37 @@ docker image ls | grep 'approov/quickstart-elixir-phoenix' | awk '{print $3}' | 
 
 ### Test with the Absinthe GraphiQL Web Interface
 
-Finally, you can test that it works by using the Absinthe Graphiql web interface at http://localhost:8002/graphiql. To make it easier to test you can upload to the web interface this graphiql workspace: `graphiql/graphiql-workspace-unprotected-server.json`.
+#### Create and Authenticate the User
+
+In order to run the tests you need to create an user that matches the `approov` user in the [GraphiQL workspaces](/graphiql).
+
+Run from your `iex` shell:
+
+```bash
+Todos.User.create %{"username" => "approov", "password" => "mysuperstrongpass"}
+```
+
+Next, you need to authenticate the user in order to enable it to be saved into the last seen `online_users` table in order for you to see the GrapQL subscription working during the tests.
+
+Run from your `iex` shell:
+
+```bash
+Todos.User.authenticate %{"username" => "approov", "password" => "mysuperstrongpass"}
+```
+
+The token in the output can be dismissed, because the [GraphiQL workspaces](/graphiql) already have valid Authorization tokens for the `approov` user.
+
+#### Ran the Tests
+
+Finally, you can test that it works by using the Absinthe GraphiQL web interface at http://localhost:8002/graphiql.
+
+To make it easier to test you can upload to the web interface this [GraphiQL workspace](/graphiql/graphiql-workspace-unprotected-server.json). After loading the workspace into the GraphiQL web interface you need to refresh the web page and afterwards you can start using the GraphQL queries in the workspace.
+
+First, from the saved queries select the subscription query for `fetchOnlineUsers` and then click in the `play` button, and now you are listening to the last time an user as created a todo, and as mentioned in the message in red `Your subscription data will appear here after server publication!` you need to wait for something to happen, and you cannot close the current web apge or click anywhere on it in order to keep the subscription active.
+
+Next, open a new browser window at http://localhost:8002/graphiql and split your screen in order to have both side to side in order for you to see subscriptions working in realtime.
+
+Now, in the new browser window select the saved mutation query to create a todo and execute it to immediately see the subscription being updated in the other window.
 
 
 [TOC](#toc---table-of-contents)
