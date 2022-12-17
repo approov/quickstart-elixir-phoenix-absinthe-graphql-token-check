@@ -258,6 +258,16 @@ defmodule ApproovToken do
   defp _get_approov_token(%{"x-approov-token" => approov_token}), do: {:ok, approov_token}
   defp _get_approov_token(%{"X-Approov-Token" => approov_token}), do: {:ok, approov_token}
 
+  defp _get_approov_token(%{x_headers: x_headers}) when is_list(x_headers) do
+    case Utils.filter_list_of_tuples(x_headers, "x-approov-token") do
+      nil ->
+        {:ok, Utils.filter_list_of_tuples(x_headers, "X-Approov-Token")}
+
+      approov_token ->
+        {:ok, approov_token}
+    end
+  end
+
   # Catch failure to fetch the Approov token from the WebSocket upgrade request
   # or from the Phoenix Channel event.
   defp _get_approov_token(_params) do

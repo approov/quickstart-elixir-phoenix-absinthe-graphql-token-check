@@ -8,6 +8,7 @@ defmodule Todos.OnlineUser do
     {
       :ok,
       Todos.Repo.all!(@table)
+      |> Enum.map(fn user -> Map.put(user, :last_seen, Calendar.strftime(user.last_seen, "%c")) end)
     }
   end
 
