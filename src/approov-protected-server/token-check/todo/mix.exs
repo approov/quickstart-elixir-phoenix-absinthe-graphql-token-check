@@ -33,15 +33,15 @@ defmodule Todo.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.1"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
-      {:bcrypt_elixir, "~> 2.0"},
-      {:phoenix_live_dashboard, "~> 0.1"},
-      {:absinthe_phoenix, "~> 2.0.0"},
-      {:joken, "~> 2.4"},
+      {:phoenix, "~> 1.6.17"},
+      {:telemetry_metrics, "~> 1.0"},
+      {:telemetry_poller, "~> 1.0"},
+      {:jason, "~> 1.4"},
+      {:plug_cowboy, "~> 2.7"},
+      {:bcrypt_elixir, "~> 3.0"},
+      {:phoenix_live_dashboard, "~> 0.8"},
+      {:absinthe_phoenix, "~> 2.0"},
+      {:joken, "~> 2.6"}
     ]
   end
 
